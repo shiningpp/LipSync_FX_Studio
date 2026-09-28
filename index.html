@@ -1355,17 +1355,29 @@
                 if (!layer.currentTag || !layer.variants[layer.currentTag]) layer.currentTag = keys[0];
 
                 const row = document.createElement('div');
-                row.className = 'flex items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded px-2 py-1';
+                row.className = 'flex items-center gap-1 bg-zinc-950/60 border border-zinc-800 rounded px-2 py-1';
                 const label = document.createElement('label');
-                label.className = 'w-24 shrink-0 truncate text-zinc-400 text-[10px]';
+                label.className = 'w-16 shrink-0 truncate text-zinc-400 text-[10px]';
                 label.textContent = layer.name;
+                const decrement = document.createElement('button');
+                decrement.type = 'button';
+                decrement.className = 'w-7 h-7 shrink-0 rounded bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 border border-zinc-700 text-zinc-200 touch-manipulation';
+                decrement.innerHTML = '<i class="fa-solid fa-minus"></i>';
+                decrement.title = '切换到上一个差分';
+                decrement.setAttribute('aria-label', `${layer.name}：上一个差分`);
                 const number = document.createElement('input');
                 number.type = 'number'; number.min = '1'; number.max = String(keys.length); number.step = '1';
                 number.value = String(keys.indexOf(layer.currentTag) + 1);
-                number.className = 'w-12 shrink-0 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-center text-cyan-200 text-[11px]';
-                number.title = `输入 1 至 ${keys.length}，或滚动鼠标滚轮切换差分`;
+                number.className = 'w-10 h-7 shrink-0 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-center text-cyan-200 text-[11px]';
+                number.title = `输入 1 至 ${keys.length}，或使用两侧按钮切换差分`;
                 number.dataset.layerIdx = idx;
                 number.dataset.keys = JSON.stringify(keys);
+                const increment = document.createElement('button');
+                increment.type = 'button';
+                increment.className = 'w-7 h-7 shrink-0 rounded bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 border border-zinc-700 text-zinc-200 touch-manipulation';
+                increment.innerHTML = '<i class="fa-solid fa-plus"></i>';
+                increment.title = '切换到下一个差分';
+                increment.setAttribute('aria-label', `${layer.name}：下一个差分`);
                 const value = document.createElement('span');
                 value.className = 'flex-1 min-w-0 truncate text-right text-cyan-300 text-[10px]';
                 value.textContent = layer.currentTag;
@@ -1381,12 +1393,19 @@
                     value.textContent = tag;
                 };
                 number.addEventListener('input', apply);
+                const changeBy = (delta) => {
+                    const current = parseInt(number.value) || 1;
+                    number.value = String(Math.max(1, Math.min(keys.length, current + delta)));
+                    apply();
+                };
+                decrement.addEventListener('click', () => changeBy(-1));
+                increment.addEventListener('click', () => changeBy(1));
                 row.addEventListener('wheel', e => {
                     e.preventDefault();
                     const next = Math.max(1, Math.min(keys.length, (parseInt(number.value) || 1) + (e.deltaY > 0 ? 1 : -1)));
                     if (next !== parseInt(number.value)) { number.value = String(next); apply(); }
                 }, { passive: false });
-                row.append(label, number, value);
+                row.append(label, decrement, number, increment, value);
                 container.appendChild(row);
             });
         }
