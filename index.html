@@ -118,7 +118,8 @@
                 <button id="duplicate-character-btn" class="px-2 py-1 bg-emerald-950 hover:bg-emerald-900 rounded text-emerald-300" title="复制当前角色"><i class="fa-solid fa-copy"></i></button>
                 <button id="export-character-btn" class="px-2 py-1 bg-emerald-950 hover:bg-emerald-900 rounded text-emerald-300" title="导出当前角色（图层、图片、位置、差分与 Distortion 参数）"><i class="fa-solid fa-file-export"></i></button>
                 <!-- 使用 label 直接触发文件选择：iOS/iPadOS 对隐藏 input 的脚本 click() 支持不稳定。 -->
-                <input type="file" id="character-file-upload" accept=".lipcharacter,.json,application/json,text/json" class="sr-only" aria-label="选择角色文件">
+                <!-- iPadOS“文件”不会可靠识别自定义 .lipcharacter 扩展名；不设 accept，改由导入逻辑校验 JSON 格式。 -->
+                <input type="file" id="character-file-upload" class="sr-only" aria-label="选择角色文件">
                 <label id="import-character-btn" for="character-file-upload" class="px-2 py-1 bg-sky-950 hover:bg-sky-900 rounded text-sky-300 cursor-pointer" title="导入角色到当前工程"><i class="fa-solid fa-file-import"></i></label>
                 <button id="delete-character-btn" class="px-2 py-1 bg-red-950 hover:bg-red-900 rounded text-red-300" title="删除当前角色"><i class="fa-solid fa-trash"></i></button>
             </div>
