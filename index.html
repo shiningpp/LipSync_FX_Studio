@@ -62,12 +62,52 @@
         .thumb-box img { width: 100%; height: 100%; object-fit: contain; }
         .thumb-box.empty { border-style: dashed; color: #52525b; }
         .thumb-box:hover { border-color: #3b82f6; }
+
+        /* Keep dense controls usable when the window or touch target is small. */
+        html, body { min-width: 0; min-height: 0; }
+        input[type="range"] { min-height: 24px; cursor: pointer; touch-action: pan-y; }
+        input[type="checkbox"], select, button, label[for] { cursor: pointer; }
+        button { min-height: 28px; }
+        button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible {
+            outline: 2px solid #60a5fa; outline-offset: 2px;
+        }
+        header { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+        header > div { flex-shrink: 0; }
+        main { min-height: 0; min-width: 0; }
+        main > aside:first-child { flex: 0 0 clamp(300px, 27vw, 430px); min-width: 0; min-height: 0; }
+        .panel-splitter { position: relative; z-index: 12; flex: 0 0 8px; cursor: col-resize; touch-action: none; user-select: none; background: #18181b; }
+        .panel-splitter::after { content: ''; position: absolute; inset: 0 3px; background: #3f3f46; border-radius: 4px; transition: background .15s; }
+        .panel-splitter:hover::after, .panel-splitter:focus-visible::after, .panel-splitter.dragging::after { background: #60a5fa; }
+        .dock-resize-handle { position: absolute; z-index: 15; top: 0; left: 0; right: 0; height: 8px; cursor: row-resize; touch-action: none; user-select: none; }
+        .dock-resize-handle::after { content: ''; position: absolute; left: calc(50% - 26px); top: 2px; width: 52px; height: 3px; border-radius: 4px; background: #52525b; }
+        .dock-resize-handle:hover::after, .dock-resize-handle:focus-visible::after, .dock-resize-handle.dragging::after { background: #60a5fa; }
+        .dock-column-splitter { position: absolute; z-index: 8; top: 0; bottom: 0; width: 8px; cursor: col-resize; touch-action: none; user-select: none; }
+        .dock-column-splitter::after { content: ''; position: absolute; inset: 0 3px; border-radius: 4px; background: #3f3f46; transition: background .15s; }
+        .dock-column-splitter:hover::after, .dock-column-splitter:focus-visible::after, .dock-column-splitter.dragging::after { background: #60a5fa; }
+        @media (max-width: 1200px) { .dock-column-splitter { display: none; } }
+        #dialogue-editor-dock { min-width: 0; }
+        #dialogue-editor-dock > .grid { min-width: 0; grid-template-columns: minmax(180px, .85fr) minmax(220px, .8fr) minmax(260px, 1.2fr) minmax(160px, .65fr) minmax(180px, .75fr); }
+        #dialogue-editor-dock > .grid > :not(.dock-column-splitter) { min-width: 0; max-width: 100%; box-sizing: border-box; padding-inline-end: 24px; }
+        #dialogue-editor-dock > .grid > :not(.dock-column-splitter):not(#dock-tools) { overflow-x: clip; }
+        #dialogue-editor-dock > .grid > :not(.dock-column-splitter) > .flex.items-center.justify-between { flex-wrap: wrap; }
+        #dialogue-editor-dock > .grid :is(button, input, select, textarea) { box-sizing: border-box; min-width: 0; max-width: 100%; }
+        #dialogue-editor-dock > .grid label { min-width: 0; overflow-wrap: anywhere; }
+        #dialogue-editor-dock > .grid > #dock-tools { min-width: 0; margin-right: 20px; padding-inline-end: 8px; overflow-x: hidden; }
+        #segment-list > * { min-width: 0; max-width: 100%; }
+        @media (max-width: 1200px) {
+            #dialogue-editor-dock > .grid { grid-template-columns: minmax(180px, .8fr) minmax(220px, .8fr) minmax(260px, 1.2fr); grid-auto-rows: minmax(170px, 1fr); overflow-y: auto; }
+            #dialogue-editor-dock > .grid > :nth-child(4), #dialogue-editor-dock > .grid > :nth-child(5) { min-height: 150px; }
+        }
+        @media (max-height: 760px) {
+            #dialogue-editor-dock { height: 42vh; min-height: 190px; }
+            .canvas-container { min-height: 180px; }
+        }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 font-sans h-screen flex flex-col overflow-hidden select-none">
 
     <!-- Header Navigation -->
-    <header class="h-14 border-b border-zinc-800 bg-zinc-900 px-4 flex items-center justify-between z-20">
+    <header class="h-14 shrink-0 border-b border-zinc-800 bg-zinc-900 px-4 flex items-center justify-between gap-4 z-20">
         <div class="flex items-center gap-3">
             <div class="bg-blue-600 text-white p-2 rounded-lg text-lg font-bold flex items-center gap-2">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -76,7 +116,11 @@
             <span class="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">WebGL v3.0 工程保存+一键导入+扰动XY分离</span>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+            <label for="ui-language" class="sr-only">界面语言</label>
+            <select id="ui-language" class="bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200" title="切换界面语言">
+                <option value="zh">中文</option><option value="en">English</option>
+            </select>
             <input type="file" id="spine-upload" webkitdirectory directory multiple class="hidden">
             <button id="import-spine-btn" class="text-xs px-3 py-1.5 bg-amber-900 hover:bg-amber-800 border border-amber-700 rounded text-amber-200 transition flex items-center gap-1.5" title="一键导入：选择导出文件夹，自动读取其中的位置JSON和全部PNG图片">
                 <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> 一键导入(选文件夹)
@@ -100,6 +144,9 @@
             <button id="export-webm-btn" class="text-xs px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded font-medium text-white transition flex items-center gap-1.5 shadow-lg shadow-emerald-950/50">
                 <i class="fa-solid fa-file-video"></i> 导出 WebM
             </button>
+            <select id="video-quality" class="bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200" title="视频文件大小与画质">
+                <option value="small">较小</option><option value="standard" selected>标准</option><option value="high">高画质</option>
+            </select>
             <button id="export-mp4-btn" class="text-xs px-3 py-1.5 bg-orange-600 hover:bg-orange-500 rounded font-medium text-white transition flex items-center gap-1.5 shadow-lg shadow-orange-950/50">
                 <i class="fa-solid fa-file-video"></i> 导出 MP4
             </button>
@@ -239,11 +286,13 @@
             </div>
         </aside>
 
+        <div id="main-panel-splitter" class="panel-splitter" role="separator" aria-label="调整图层面板宽度" aria-orientation="vertical" aria-valuemin="280" aria-valuemax="560" tabindex="0" title="拖动以调整面板宽度；方向键微调"></div>
+
         <!-- CENTER PANEL: Canvas & Interactive Viewport -->
         <section class="flex-1 bg-zinc-950 flex flex-col relative overflow-hidden">
             <!-- Viewport Overlay Toolbar -->
-            <div class="absolute top-3 left-3 right-3 flex justify-between items-center z-10 pointer-events-none">
-                <div class="bg-zinc-900/80 backdrop-blur-md p-2 rounded-lg border border-zinc-800 text-xs flex flex-col gap-2 pointer-events-auto w-56 max-h-[72vh] overflow-y-auto">
+            <div class="absolute top-3 bottom-11 left-3 right-3 flex justify-between items-start z-10 pointer-events-none min-h-0">
+                <div class="bg-zinc-900/90 backdrop-blur-md p-2 rounded-lg border border-zinc-800 text-xs flex flex-col gap-2 pointer-events-auto w-56 min-h-0 max-h-full overflow-y-auto overscroll-contain">
                     <div class="flex flex-wrap items-center gap-1.5 pb-2 border-b border-zinc-800">
                         <span class="text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-gamepad text-blue-400"></i> 预览口型</span>
                         <span id="active-phoneme-badge" class="font-mono text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 rounded font-bold">m</span>
@@ -447,13 +496,14 @@
     </main>
 
     <!-- 当前段落的大型编辑器：口型控制文本和画面字幕分别维护 -->
-    <section id="dialogue-editor-dock" class="h-[360px] min-h-[240px] max-h-[75vh] shrink-0 resize-y overflow-auto border-t border-zinc-700 bg-zinc-900 px-4 py-3 flex flex-col gap-2">
+    <section id="dialogue-editor-dock" class="h-[360px] min-h-[240px] max-h-[75vh] shrink-0 overflow-auto border-t border-zinc-700 bg-zinc-900 px-4 py-3 flex flex-col gap-2 relative">
+        <div id="dock-resize-handle" class="dock-resize-handle" role="separator" aria-label="调整编辑区高度" aria-orientation="horizontal" tabindex="0" title="拖动以调整编辑区高度；方向键微调"></div>
         <div class="flex items-center gap-3 text-xs">
             <span class="font-bold text-blue-300"><i class="fa-solid fa-pen-to-square mr-1"></i>当前段落编辑器</span>
             <span id="dock-segment-label" class="text-zinc-400">请在右侧选择一个段落</span>
             <span class="text-zinc-600">口型控制文本与画面字幕独立保存</span>
         </div>
-        <div class="grid grid-cols-[380px_minmax(280px,0.8fr)_minmax(320px,1fr)_210px_minmax(140px,0.5fr)] gap-3 flex-1 min-h-0 min-w-[1400px]">
+        <div class="grid gap-3 flex-1 min-h-0 min-w-0">
             <div class="flex flex-col min-h-0">
                 <div class="flex items-center justify-between mb-1">
                     <label class="text-[11px] font-semibold text-cyan-300">段落选择</label>
@@ -2690,7 +2740,7 @@
             if (segment) window.focusedSegmentTA = script;
             script.value = segment?.text || '';
             subtitle.value = segment?.subtitle || '';
-            label.innerText = segment ? `正在编辑：第 ${index + 1} 段` : '请在右侧选择一个段落';
+            label.innerText = segment ? `正在编辑：第 ${index + 1} 段` : '选择一个段落开始编辑';
             preview.innerHTML = segment ? (highlightScriptTags(segment.text) || '<span class="text-zinc-600">此段没有控制语句</span>') : '';
         }
         function updateSegmentEditorBindings() {
@@ -3301,6 +3351,102 @@
         function triggerFlash() {
             APP.fx.flashUntil = performance.now() / 1000 + 0.35;
         }
+        const UI_EN = {
+            '口型动画与插图动态 Studio':'Lip Sync & Illustration FX Studio','WebGL v3.0 工程保存+一键导入+扰动XY分离':'WebGL v3.0 · Project files · Quick import · XY distortion',
+            '一键导入(选文件夹)':'Quick Import (Folder)','保存工程':'Save Project','读取工程':'Load Project','导出工程文件':'Export Project','导入工程文件':'Import Project',
+            '导出 WebM':'Export WebM','导出 MP4':'Export MP4','较小':'Smaller file','标准':'Standard','高画质':'High quality',
+            '较小文件':'Smaller file','标准画质':'Standard quality','高画质':'High quality',
+            '界面语言':'Interface language','切换界面语言':'Interface language','图层与素材':'Layers & Assets','眨眼与呼吸':'Blink & Breathing',
+            '新增图层':'Add Layer','新增角色':'Add Character','重命名角色':'Rename Character','复制当前角色':'Duplicate Character','导入角色到当前工程':'Import Character',
+            '全局遮罩（遮罩外透明）':'Global Mask (transparent outside)','启用':'Enable','遮罩贴图（用 Alpha 控制可见区域）':'Mask image (alpha controls visibility)','上传遮罩':'Upload Mask',
+            '预览口型':'Preview Mouth','眼睛':'Eyes','全开':'Open','半开':'Half','闭上':'Closed','图层差分':'Layer Variants',
+            '插入当前差分控制语句':'Insert Variant Tags','台词与口型对齐序列':'Dialogue & Lip Sync Sequence','播放全部台词':'Play All Dialogue',
+            '当前段落编辑器':'Segment Editor','请在右侧选择一个段落':'Select a segment to edit','选择一个段落开始编辑':'Select a segment to start editing','口型控制文本与画面字幕独立保存':'Lip-sync text and on-screen subtitles are saved separately',
+            '段落选择':'Segments','添加':'Add','口型与控制台词':'Dialogue & Control Tags','光标处分段':'Split at Cursor','控制语句预览':'Tag Preview',
+            '按类型着色':'Color-coded by type','画面字幕':'On-screen Subtitles','换行':'New Line','输入本段要显示在画面中的字幕...':'Enter subtitles for this segment...',
+            '选择段落后编辑口型台词与控制语句...':'Select a segment to edit dialogue and control tags...','系统字体':'System Font','上传字体':'Upload Font',
+            '连续预览起始段':'Start preview from','故障类型':'Glitch Type','故障开关':'Glitch Enabled','故障强度':'Glitch Amount','故障速度':'Glitch Speed',
+            '鱼眼':'Fisheye','屏幕弯曲':'Screen Warp','模糊(px)':'Blur (px)','色温（冷←→暖）':'Color Temperature (Cool ↔ Warm)',
+            '电视雪花':'TV Noise','反相':'Invert','导出时包含配音音频（需先绑定音频文件）':'Include voice audio (attach audio first)',
+            '导出时包含配音音频':'Include voice audio','默认台词语言（影响自动口型）':'Default dialogue language (affects auto lip sync)',
+            '选择角色文件':'Choose character file','管理差分 Tag 与帧图片':'Manage Variant Tags & Frames','完成':'Done','新增 Tag 名':'New tag name',
+            '导出失败':'Export failed','图层名':'Layer name','导出/导入':'Export / Import','工程名称（用于保存与导出文件名）':'Project name (used in saved and exported filenames)',
+            '视频文件大小与画质':'Video size and quality','导出失败：':'Export failed:','导出完成':'Export complete','读取工程失败':'Could not load project',
+            '导入工程文件':'Import Project','导出当前角色':'Export Character','删除当前角色':'Delete Character','复制':'Duplicate','重命名':'Rename',
+            '插入当前差分控制语句':'Insert Current Variant Tags','图层结构与独立的蒙版/贴图':'Layers and per-layer masks/textures',
+            '选择要导入的图片文件夹':'Choose an image folder to import','遮罩位置X':'Mask Position X','遮罩位置Y':'Mask Position Y',
+            '遮罩大小X':'Mask Width','遮罩大小Y':'Mask Height','新增画面特效参数（也可由台词 Tag 控制）':'Visual Effects (also controlled by dialogue tags)',
+            '台词内嵌 Tag 控制语法：':'Dialogue Tag Syntax:','默认语言':'Default','中文':'Chinese','日语':'Japanese','英语':'English',
+            '本段口型及 TTS 语言':'Lip sync and TTS language for this segment','脚本':'Script','字幕':'Subtitles','选择文件':'Choose File',
+            '音频':'Audio','语言':'Language','语速':'Speech Rate','播放':'Play','停止':'Stop','上传':'Upload','移除':'Remove','关闭':'Close',
+            '差分':'Variant','位置 X':'Position X','位置 Y':'Position Y','缩放 X':'Scale X','缩放 Y':'Scale Y','速度':'Speed','强度':'Strength',
+            '频率 X':'Frequency X','频率 Y':'Frequency Y','方向':'Direction','蒙版通道':'Mask Channel','噪声贴图':'Noise Texture',
+            '预览':'Preview','重置':'Reset','添加图层':'Add Layer','图层名：':'Layer name:','按住拖动':'Drag to move',
+            '渲染引擎就绪':'Renderer ready','正在录制/导出动画视频...':'Recording video...','扫描偏移':'Scan Shift','切片错位':'Slice Shift','RGB 撕裂':'RGB Tear',
+            '上传音频':'Upload Audio','绑定音频':'Attach Audio','添加段落':'Add Segment','删除':'Delete','导出角色':'Export Character','导入角色':'Import Character',
+            '调整图层面板宽度':'Resize layers panel','拖动以调整面板宽度；方向键微调':'Drag to resize; use arrow keys for fine adjustment',
+            '调整编辑区高度':'Resize editor height','拖动以调整编辑区高度；方向键微调':'Drag to resize; use arrow keys for fine adjustment',
+            '调整编辑器分栏宽度':'Resize editor column','拖动以调整分栏宽度；方向键微调':'Drag to resize column; use arrow keys for fine adjustment'
+        };
+        const uiTextSource = new WeakMap();
+        const uiTextRendered = new WeakMap();
+        const uiAttrSource = new WeakMap();
+        const uiAttrRendered = new WeakMap();
+        function setUiLanguage(lang, scope = null) {
+            const english = lang === 'en';
+            document.documentElement.lang = english ? 'en' : 'zh-CN';
+            const roots = scope ? (Array.isArray(scope) ? scope : [scope]) : [document.body];
+            const textNodes = [];
+            for (const root of roots) {
+                if (!root) continue;
+                if (root.nodeType === Node.TEXT_NODE) textNodes.push(root);
+                else {
+                    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+                    let textNode; while ((textNode = walker.nextNode())) textNodes.push(textNode);
+                }
+            }
+            for (const node of textNodes) {
+                const current = node.nodeValue;
+                if (!current.trim() || node.parentElement?.closest('script,style,textarea,input')) continue;
+                if (!uiTextSource.has(node) || (uiTextRendered.has(node) && current !== uiTextRendered.get(node))) uiTextSource.set(node, current);
+                const source = uiTextSource.get(node), key = source.trim();
+                let translated = english ? UI_EN[key] : source;
+                if (!translated && english) translated = key.replace(/^正在编辑：第\s*(\d+)\s*段$/, 'Editing segment $1');
+                if (translated) {
+                    const output = source.replace(key, translated);
+                    if (current !== output) node.nodeValue = output;
+                    uiTextRendered.set(node, output);
+                } else uiTextRendered.set(node, current);
+            }
+            const elements = new Set();
+            for (const root of roots) {
+                if (!root || root.nodeType !== Node.ELEMENT_NODE) continue;
+                if (root.matches?.('[title],[placeholder],[aria-label]')) elements.add(root);
+                root.querySelectorAll?.('[title],[placeholder],[aria-label]').forEach(el => elements.add(el));
+            }
+            elements.forEach(el => {
+                for (const attr of ['title','placeholder','aria-label']) {
+                    const current = el.getAttribute(attr); if (!current) continue;
+                    let sources = uiAttrSource.get(el);
+                    let rendered = uiAttrRendered.get(el);
+                    if (!sources) { sources = new Map(); uiAttrSource.set(el, sources); }
+                    if (!rendered) { rendered = new Map(); uiAttrRendered.set(el, rendered); }
+                    if (!sources.has(attr) || (rendered.has(attr) && current !== rendered.get(attr))) sources.set(attr, current);
+                    const source = sources.get(attr);
+                    const output = english ? (UI_EN[source] || source) : source;
+                    if (current !== output) el.setAttribute(attr, output);
+                    rendered.set(attr, output);
+                }
+            });
+            if (!scope) localStorage.setItem('lipSyncFXStudioUiLanguage', english ? 'en' : 'zh');
+        }
+        function videoExportSettings() {
+            const quality = document.getElementById('video-quality')?.value || 'standard';
+            return ({ small: { bitrate: 1200000, crf: '30', maxrate: '1600k' }, standard: { bitrate: 2200000, crf: '27', maxrate: '2800k' }, high: { bitrate: 4200000, crf: '23', maxrate: '5000k' } })[quality];
+        }
+        function formatFileSize(bytes) {
+            return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+        }
         // 每帧更新画布 CSS 变换（颜色类特效均在 shader 内，确保可被视频导出捕获）
         function applyEffectsFrame() {
             const cv = APP.canvas;
@@ -3354,7 +3500,7 @@
                     resolve(null);
                     return;
                 }
-                const canvasStream = APP.canvas.captureStream(60);
+                const canvasStream = APP.canvas.captureStream(30);
                 let stream = canvasStream;
                 let mediaDest = null;
                 const hasAttachedAudio = !!APP.globalAudio?.url || APP.segments.some(seg => !!seg?.audio);
@@ -3384,7 +3530,7 @@
                 if (!recorderMime || !MediaRecorder.isTypeSupported(recorderMime)) { resolve(null); return; }
                 let recorder;
                 try {
-                    recorder = new MediaRecorder(stream, { mimeType: recorderMime, videoBitsPerSecond: bitsPerSecond, audioBitsPerSecond: 128000 });
+                    recorder = new MediaRecorder(stream, { mimeType: recorderMime, videoBitsPerSecond: bitsPerSecond, audioBitsPerSecond: 96000 });
                 } catch (e) {
                     resolve(null);
                     return;
@@ -3405,16 +3551,17 @@
 
         async function exportCanvasVideoWebM() {
             if (APP.scriptPlaying) { alert('请先停止当前播放再导出'); return; }
-            const filename = `character-lip-sync-${Date.now()}.webm`;
+            const filename = `${projectFilename().replace(/\.json$/i, '')}-${Date.now()}.webm`;
             const saveHandle = await chooseSaveLocation(filename, 'video/webm', 'webm');
             if (saveHandle === null) return;
             showExportProgress(true);
             try {
-                let blob = await recordCanvasToBlob('video/webm;codecs=vp9,opus', 8000000);
-                if (!blob || blob.size === 0) blob = await recordCanvasToBlob('video/webm', 8000000);
+                const settings = videoExportSettings();
+                let blob = await recordCanvasToBlob('video/webm;codecs=vp9,opus', settings.bitrate);
+                if (!blob || blob.size === 0) blob = await recordCanvasToBlob('video/webm', settings.bitrate);
                 if (!blob || blob.size === 0) throw new Error('录制失败');
                 await saveBlob(blob, filename, saveHandle);
-                document.getElementById('status-indicator').innerText = 'WebM 导出完成';
+                document.getElementById('status-indicator').innerText = `WebM 导出完成 · ${formatFileSize(blob.size)}`;
             } catch (e) {
                 console.error(e);
                 alert('WebM 导出失败：' + e.message);
@@ -3424,7 +3571,7 @@
 
         async function exportCanvasVideoMP4() {
             if (APP.scriptPlaying) { alert('请先停止当前播放再导出'); return; }
-            const filename = `character-lip-sync-${Date.now()}.mp4`;
+            const filename = `${projectFilename().replace(/\.json$/i, '')}-${Date.now()}.mp4`;
             const saveHandle = await chooseSaveLocation(filename, 'video/mp4', 'mp4');
             if (saveHandle === null) return;
             showExportProgress(true);
@@ -3440,10 +3587,10 @@
                     }
                 }
                 // 方案二：浏览器原生 video/mp4 录制（Safari 等支持）
-                const blob = await recordCanvasToBlob('video/mp4', 8000000);
+                const blob = await recordCanvasToBlob('video/mp4', videoExportSettings().bitrate);
                 if (blob && blob.size > 0) {
                     await saveBlob(blob, filename, saveHandle);
-                    document.getElementById('status-indicator').innerText = 'MP4 导出完成 (原生录制)';
+                    document.getElementById('status-indicator').innerText = `MP4 导出完成 · ${formatFileSize(blob.size)}`;
                     showExportProgress(false);
                     return;
                 }
@@ -3458,7 +3605,8 @@
         async function exportMP4ViaFFmpeg(saveHandle, filename) {
             const statusEl = document.getElementById('status-indicator');
             // 录制 WebM
-            const webmBlob = await recordCanvasToBlob('video/webm;codecs=vp9,opus', 8000000);
+            const settings = videoExportSettings();
+            const webmBlob = await recordCanvasToBlob('video/webm;codecs=vp9,opus', Math.max(settings.bitrate, 4500000));
             if (!webmBlob || webmBlob.size === 0) throw new Error('WebM 录制失败');
             statusEl.innerText = '正在加载 ffmpeg.wasm 内核（首次约 30MB）...';
 
@@ -3474,12 +3622,12 @@
             });
 
             await ffmpeg.writeFile('in.webm', new Uint8Array(await webmBlob.arrayBuffer()));
-            await ffmpeg.exec(['-i', 'in.webm', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '128k', 'out.mp4']);
+            await ffmpeg.exec(['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'medium', '-crf', settings.crf, '-maxrate', settings.maxrate, '-bufsize', '2M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '96k', '-ar', '44100', 'out.mp4']);
             const data = await ffmpeg.readFile('out.mp4');
 
             const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' });
             await saveBlob(mp4Blob, filename || `character-lip-sync-${Date.now()}.mp4`, saveHandle);
-            statusEl.innerText = 'MP4 导出完成 (ffmpeg.wasm 转码)';
+            statusEl.innerText = `MP4 导出完成 · ${formatFileSize(mp4Blob.size)}`;
         }
 
         // ============ 工程保存 / 读取 ============
@@ -4185,8 +4333,156 @@
             return `${safe}.json`;
         }
 
+        function setupPanelResizers() {
+            const main = document.querySelector('main');
+            const leftPanel = main?.querySelector(':scope > aside:first-child');
+            const widthGrip = document.getElementById('main-panel-splitter');
+            const dock = document.getElementById('dialogue-editor-dock');
+            const heightGrip = document.getElementById('dock-resize-handle');
+            const savedWidth = Number(localStorage.getItem('lipSyncFXStudioPanelWidth'));
+            const savedHeight = Number(localStorage.getItem('lipSyncFXStudioDockHeight'));
+            const clampWidth = value => Math.max(280, Math.min(560, Math.min(window.innerWidth - 420, value)));
+            const clampHeight = value => Math.max(200, Math.min(window.innerHeight * 0.75, window.innerHeight - 220, value));
+            const setWidth = value => {
+                const width = clampWidth(value);
+                leftPanel.style.flexBasis = `${width}px`;
+                widthGrip.setAttribute('aria-valuenow', Math.round(width));
+                localStorage.setItem('lipSyncFXStudioPanelWidth', String(Math.round(width)));
+            };
+            const setHeight = value => {
+                const height = clampHeight(value);
+                dock.style.height = `${height}px`;
+                heightGrip.setAttribute('aria-valuenow', Math.round(height));
+                localStorage.setItem('lipSyncFXStudioDockHeight', String(Math.round(height)));
+            };
+            setWidth(savedWidth > 0 ? savedWidth : leftPanel.getBoundingClientRect().width);
+            setHeight(savedHeight > 0 ? savedHeight : dock.getBoundingClientRect().height);
+
+            let dragStart = null;
+            widthGrip.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                dragStart = { x: event.clientX, width: leftPanel.getBoundingClientRect().width };
+                widthGrip.classList.add('dragging');
+                widthGrip.setPointerCapture(event.pointerId);
+            });
+            widthGrip.addEventListener('pointermove', event => {
+                if (dragStart) setWidth(dragStart.width + event.clientX - dragStart.x);
+            });
+            const stopWidthDrag = () => { dragStart = null; widthGrip.classList.remove('dragging'); };
+            widthGrip.addEventListener('pointerup', stopWidthDrag);
+            widthGrip.addEventListener('pointercancel', stopWidthDrag);
+            widthGrip.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                setWidth(leftPanel.getBoundingClientRect().width + (event.key === 'ArrowRight' ? 16 : -16));
+            });
+
+            let heightStart = null;
+            heightGrip.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                heightStart = { y: event.clientY, height: dock.getBoundingClientRect().height };
+                heightGrip.classList.add('dragging');
+                heightGrip.setPointerCapture(event.pointerId);
+            });
+            heightGrip.addEventListener('pointermove', event => {
+                if (heightStart) setHeight(heightStart.height + heightStart.y - event.clientY);
+            });
+            const stopHeightDrag = () => { heightStart = null; heightGrip.classList.remove('dragging'); };
+            heightGrip.addEventListener('pointerup', stopHeightDrag);
+            heightGrip.addEventListener('pointercancel', stopHeightDrag);
+            heightGrip.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+                event.preventDefault();
+                setHeight(dock.getBoundingClientRect().height + (event.key === 'ArrowUp' ? 16 : -16));
+            });
+
+            const grid = dock.querySelector(':scope > .grid');
+            const columns = Array.from(grid.children).slice(0, 5);
+            const minimums = [170, 200, 250, 150, 170];
+            let weights = [0.85, 0.8, 1.2, 0.65, 0.75];
+            try {
+                const saved = JSON.parse(localStorage.getItem('lipSyncFXStudioDockColumns') || 'null');
+                if (Array.isArray(saved) && saved.length === 5 && saved.every(value => Number.isFinite(value) && value > 0)) weights = saved;
+            } catch (_) {}
+            const columnGrips = [];
+            for (let i = 0; i < columns.length - 1; i++) {
+                const grip = document.createElement('div');
+                grip.className = 'dock-column-splitter';
+                grip.setAttribute('role', 'separator'); grip.setAttribute('aria-orientation', 'vertical');
+                grip.setAttribute('aria-label', '调整编辑器分栏宽度'); grip.setAttribute('aria-valuemin', minimums[i]);
+                grip.setAttribute('aria-valuemax', 2000); grip.tabIndex = 0;
+                grip.title = '拖动以调整分栏宽度；方向键微调';
+                grid.appendChild(grip); columnGrips.push(grip);
+            }
+            const getColumnTrackRect = index => {
+                const rect = columns[index].getBoundingClientRect();
+                const style = getComputedStyle(columns[index]);
+                const marginLeft = parseFloat(style.marginLeft) || 0;
+                const marginRight = parseFloat(style.marginRight) || 0;
+                return { left: rect.left - marginLeft, right: rect.right + marginRight, width: rect.width + marginLeft + marginRight };
+            };
+            const placeColumnGrips = () => {
+                if (window.innerWidth <= 1200) {
+                    grid.style.gridTemplateColumns = '';
+                    columnGrips.forEach(grip => { grip.style.display = 'none'; });
+                    return;
+                }
+                grid.style.gridTemplateColumns = weights.map((weight, i) => `minmax(${minimums[i]}px, ${weight.toFixed(4)}fr)`).join(' ');
+                const gridRect = grid.getBoundingClientRect();
+                columnGrips.forEach((grip, i) => {
+                    grip.style.display = 'block';
+                    const rect = getColumnTrackRect(i);
+                    // Use the grid track edge (including any panel inset margin) and center the grip in its gap.
+                    grip.style.left = `${rect.right - gridRect.left + 2}px`;
+                    grip.setAttribute('aria-valuenow', Math.round(rect.width));
+                });
+            };
+            const resizeColumnPair = (index, delta, startWidths = null, startWeights = null) => {
+                const before = startWidths || [getColumnTrackRect(index).width, getColumnTrackRect(index + 1).width];
+                const baseWeights = startWeights || [...weights];
+                const actualDelta = Math.max(-before[0] + minimums[index], Math.min(before[1] - minimums[index + 1], delta));
+                const available = Math.max(1, grid.clientWidth - (columns.length - 1) * 12);
+                const pxToFr = baseWeights.reduce((sum, value) => sum + value, 0) / available;
+                weights = [...baseWeights];
+                weights[index] += actualDelta * pxToFr;
+                weights[index + 1] -= actualDelta * pxToFr;
+                placeColumnGrips();
+                localStorage.setItem('lipSyncFXStudioDockColumns', JSON.stringify(weights));
+            };
+            columnGrips.forEach((grip, index) => {
+                let start = null;
+                grip.addEventListener('pointerdown', event => {
+                    event.preventDefault();
+                    start = { x: event.clientX, widths: [getColumnTrackRect(index).width, getColumnTrackRect(index + 1).width], weights: [...weights] };
+                    grip.classList.add('dragging'); grip.setPointerCapture(event.pointerId);
+                });
+                grip.addEventListener('pointermove', event => { if (start) resizeColumnPair(index, event.clientX - start.x, start.widths, start.weights); });
+                const stop = () => { start = null; grip.classList.remove('dragging'); };
+                grip.addEventListener('pointerup', stop); grip.addEventListener('pointercancel', stop);
+                grip.addEventListener('keydown', event => {
+                    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                    event.preventDefault();
+                    resizeColumnPair(index, event.key === 'ArrowRight' ? 12 : -12);
+                });
+            });
+            placeColumnGrips();
+            window.addEventListener('resize', placeColumnGrips);
+        }
+
         // ============ UI 事件绑定 ============
         function initUIEvents() {
+            setupPanelResizers();
+            const languageSelect = document.getElementById('ui-language');
+            languageSelect.value = localStorage.getItem('lipSyncFXStudioUiLanguage') === 'en' ? 'en' : 'zh';
+            languageSelect.addEventListener('change', e => setUiLanguage(e.target.value));
+            setUiLanguage(languageSelect.value);
+            let languageRefreshTimer;
+            new MutationObserver(records => {
+                if (languageSelect.value !== 'en' || !records.length) return;
+                clearTimeout(languageRefreshTimer);
+                const changed = records.flatMap(record => record.type === 'characterData' ? [record.target] : Array.from(record.addedNodes));
+                languageRefreshTimer = setTimeout(() => setUiLanguage('en', changed), 80);
+            }).observe(document.body, { childList: true, characterData: true, subtree: true });
             // 将所有右侧工具迁入页面底部，给控制语句、配音与字幕足够的可视空间。
             const rightPanel = document.getElementById('right-panel');
             const tools = document.getElementById('dock-tools');
