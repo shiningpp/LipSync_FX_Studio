@@ -153,6 +153,10 @@
             <button id="import-spine-btn" class="text-xs px-3 py-1.5 bg-amber-900 hover:bg-amber-800 border border-amber-700 rounded text-amber-200 transition flex items-center gap-1.5" title="一键导入：选择导出文件夹，自动读取其中的位置JSON和全部PNG图片">
                 <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> 一键导入(选文件夹)
             </button>
+            <input type="file" id="psd-upload" accept=".psd" class="hidden">
+            <button id="import-psd-btn" class="text-xs px-3 py-1.5 bg-sky-900 hover:bg-sky-800 border border-sky-700 rounded text-sky-200 transition flex items-center gap-1.5" title="选择 PSD 文件并按图层名拆分导入">
+                <i class="fa-solid fa-file-image text-sky-300"></i> 一键导入 PSD
+            </button>
             <div class="h-4 w-[1px] bg-zinc-800"></div>
             <input id="project-name" value="lip-sync-project" maxlength="60" title="工程名称（用于保存与导出文件名）" class="w-32 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200" placeholder="工程名称">
             <button id="global-undo-btn" class="text-xs px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300" title="撤销 (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i> 撤销</button>
@@ -338,7 +342,7 @@
                         </select>
                         <span class="text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-eye text-purple-400"></i> 眼睛</span>
                         <select id="preview-eye" class="bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200 text-[11px]">
-                            <option value="open">全开</option><option value="half">半开</option><option value="closed">闭上</option>
+                            <option value="auto">自动眨眼</option><option value="open">全开</option><option value="half">半开</option><option value="closed">闭上</option>
                         </select>
                     </div>
                     <select id="preview-transform-target" class="hidden" aria-hidden="true" tabindex="-1"><option value="off">关闭</option><option value="mask">全局遮罩</option></select>
@@ -357,6 +361,7 @@
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="crt"><div class="font-semibold text-emerald-300">CRT</div><label class="flex items-center gap-1">启用 <input id="fx-crt-on" type="checkbox" class="accent-fuchsia-500"></label><label>线间距(px) <input id="fx-crt-spacing" type="number" min="1" max="32" step="1" value="4" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label><label>强度 <input id="fx-crt-intensity" type="range" min="0" max="1" step="0.01" value="0.36" class="w-full accent-fuchsia-500"></label></div>
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="line"><div class="font-semibold text-indigo-300">线稿</div><label class="flex items-center gap-1">启用 <input id="fx-line-on" type="checkbox" class="accent-fuchsia-500"></label><label class="flex items-center justify-between gap-2">线色 <input id="fx-line-color" type="color" value="#ffffff" class="h-6 w-10"></label><label class="flex items-center justify-between gap-2">填充色 <input id="fx-fill-color" type="color" value="#000000" class="h-6 w-10"></label></div>
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="ca"><div class="font-semibold text-pink-300">色差</div><label class="flex items-center gap-1">启用 <input id="fx-ca-on" type="checkbox" class="accent-fuchsia-500"></label><label>偏移强度 <input id="fx-ca-amount" type="number" min="0" max="0.05" step="0.0005" value="0.003" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label></div>
+                            <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="pixelate"><div class="font-semibold text-cyan-300">像素化</div><label class="flex items-center gap-1">启用 <input id="pixelation-enable" type="checkbox" class="accent-fuchsia-500"></label><label>像素步长 (px) <input id="pixelation-size" type="number" min="1" max="64" step="1" value="4" disabled class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label></div>
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="glitch"><div class="font-semibold text-fuchsia-300">故障</div><label>类型<select id="fx-glitch-type" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"><option value="0">扫描偏移</option><option value="1">切片错位</option><option value="2">RGB 撕裂</option></select></label><label class="flex items-center gap-1">启用 <input id="fx-glitch-on" type="checkbox" class="accent-fuchsia-500"></label><label>强度 <input id="fx-glitch-amount" type="number" min="0" max="0.2" step="0.005" value="0.02" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label><label>速度 <input id="fx-glitch-speed" type="number" min="0" max="60" step="1" value="8" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label></div>
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="fisheye"><div class="font-semibold text-violet-300">鱼眼</div><label>强度 <input id="fx-fisheye" type="range" min="0" max="1" step="0.01" value="0" class="w-full accent-fuchsia-500"></label></div>
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="screen"><div class="font-semibold text-cyan-300">弯屏</div><label>强度 <input id="fx-screen" type="range" min="0" max="1" step="0.01" value="0" class="w-full accent-fuchsia-500"></label></div>
@@ -383,11 +388,22 @@
                 </details>
                 </div>
 
-                <div class="bg-zinc-900/80 backdrop-blur-md px-3 py-1 rounded-lg border border-zinc-800 text-xs flex items-center gap-2 pointer-events-auto">
-                    <button id="zoom-out" class="p-1 hover:text-blue-400"><i class="fa-solid fa-minus"></i></button>
-                    <span id="zoom-val" class="font-mono text-[11px] w-12 text-center text-zinc-400">100%</span>
-                    <button id="zoom-in" class="p-1 hover:text-blue-400"><i class="fa-solid fa-plus"></i></button>
-                    <button id="zoom-reset" class="p-1 hover:text-blue-400 border-l border-zinc-800 ml-1 pl-2"><i class="fa-solid fa-rotate-left"></i></button>
+                <div class="flex flex-col items-end gap-2 pointer-events-auto max-h-full">
+                    <details id="pixelation-preview-panel" class="w-48 bg-zinc-900/90 backdrop-blur-md p-2 rounded-lg border border-zinc-800 text-[10px]">
+                        <summary class="cursor-pointer text-zinc-300 font-semibold">抽帧</summary>
+                        <div class="mt-2 space-y-2 text-zinc-400">
+                            <label class="flex items-center gap-1.5"><input id="frame-skip-enable" type="checkbox" class="accent-cyan-500">抽帧</label>
+                            <label class="flex items-center justify-between gap-2">每隔 N 帧绘制
+                                <input id="frame-skip-interval" type="number" min="2" max="60" step="1" value="2" disabled class="w-14 bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200">
+                            </label>
+                        </div>
+                    </details>
+                    <div class="bg-zinc-900/80 backdrop-blur-md px-3 py-1 rounded-lg border border-zinc-800 text-xs flex items-center gap-2">
+                        <button id="zoom-out" class="p-1 hover:text-blue-400"><i class="fa-solid fa-minus"></i></button>
+                        <span id="zoom-val" class="font-mono text-[11px] w-12 text-center text-zinc-400">100%</span>
+                        <button id="zoom-in" class="p-1 hover:text-blue-400"><i class="fa-solid fa-plus"></i></button>
+                        <button id="zoom-reset" class="p-1 hover:text-blue-400 border-l border-zinc-800 ml-1 pl-2"><i class="fa-solid fa-rotate-left"></i></button>
+                    </div>
                 </div>
             </div>
 
@@ -441,6 +457,7 @@
                         <div><code class="text-fuchsia-300">[crt:4:0.36]</code> <span>CRT 线间距像素:强度；支持 off。</span></div>
                         <div><code class="text-fuchsia-300">[line:on:white:black]</code> <span>线稿开关:线色:填充色；也支持 off。颜色可用名称或 #RRGGBB。</span></div>
                         <div><code class="text-fuchsia-300">[glitch:scan:0.02:8]</code> <span>故障类型(scan/slice/rgb):强度:速度；支持 off。</span></div>
+                        <div><code class="text-fuchsia-300">[pixelate:on:4] [pixelate:off]</code> <span>像素化开关:步长(px)；仅影响角色画面，不影响字幕。</span></div>
                         <div><code class="text-fuchsia-300">[fisheye:0.3] [screen:0.4] [blur:2]</code> <span>鱼眼、屏幕弯曲、模糊强度；均支持 off。</span></div>
                         <div><code class="text-fuchsia-300">[temp:0.2] [snow:0.3] [invert:1]</code> <span>色温、雪花、反相强度；均支持 off。</span></div>
                         <div><code class="text-fuchsia-300">[zoom:1.3] [zoom:off]</code> <span>画面缩放；off 恢复原始倍率。</span></div>
@@ -570,6 +587,11 @@
                     <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 mt-2">
                         <label class="text-zinc-400 flex items-center gap-1">显示字幕 <input id="subtitle-enable" type="checkbox" class="accent-amber-500"></label>
                         <label class="text-zinc-400 flex items-center gap-1">文字大小 <input id="subtitle-size" type="number" min="12" max="160" value="34" class="w-16 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200"></label>
+                        <label class="text-zinc-400 flex items-center gap-1">文字对齐
+                            <select id="subtitle-align" class="bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200">
+                                <option value="left">左对齐</option><option value="center" selected>居中</option><option value="right">右对齐</option>
+                            </select>
+                        </label>
                         <label class="text-zinc-400 flex items-center gap-1">位置 X <input id="subtitle-x" type="number" min="0" max="800" value="400" class="w-16 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200"></label>
                         <label class="text-zinc-400 flex items-center gap-1">位置 Y <input id="subtitle-y" type="number" min="0" max="800" value="720" class="w-16 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200"></label>
                         <label class="text-zinc-400 flex items-center gap-1">文字颜色 <input id="subtitle-color" type="color" value="#ffffff" class="h-6 align-middle"></label>
@@ -579,6 +601,34 @@
                         <span id="subtitle-font-label" class="text-[10px] text-zinc-500">系统字体</span>
                         <input id="subtitle-font-upload" type="file" accept=".ttf,.otf,.woff,.woff2,font/*" class="hidden">
                         <button id="subtitle-font-btn" class="px-2 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded text-[10px] text-zinc-300">上传字体</button>
+                    </div>
+                    <div class="mt-2 space-y-2 border-t border-zinc-800 pt-2">
+                        <div>
+                            <label class="flex items-center gap-1.5 text-amber-200"><input id="subtitle-typewriter" type="checkbox" class="accent-amber-500">逐字显示</label>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <label class="flex items-center gap-1 text-amber-200"><input id="subtitle-typewriter-sound" type="checkbox" checked disabled class="accent-amber-500">电子音</label>
+                            <label class="flex items-center gap-1 text-zinc-400">音色
+                                <select id="subtitle-sound-wave" disabled class="rounded border border-zinc-700 bg-zinc-900 px-1 py-0.5 text-zinc-200">
+                                    <option value="sine">正弦</option><option value="triangle">三角</option><option value="square">方波</option><option value="sawtooth">锯齿</option>
+                                </select>
+                            </label>
+                            <label class="flex min-w-[120px] flex-1 items-center gap-1 text-zinc-400">频率
+                                <input id="subtitle-sound-frequency" type="range" min="220" max="1760" step="10" value="880" disabled class="min-w-12 flex-1 accent-amber-500">
+                                <output id="subtitle-sound-frequency-value" class="w-14 text-right font-mono text-amber-200">880 Hz</output>
+                            </label>
+                            <label class="flex min-w-[100px] flex-1 items-center gap-1 text-zinc-400">音量
+                                <input id="subtitle-sound-volume" type="range" min="0" max="200" step="1" value="35" disabled class="min-w-12 flex-1 accent-amber-500">
+                                <output id="subtitle-sound-volume-value" class="w-10 text-right font-mono text-amber-200">35%</output>
+                            </label>
+                        </div>
+                        <div class="space-y-1.5 rounded border border-zinc-800 bg-zinc-950/60 p-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <button id="subtitle-generate-breaks" type="button" class="px-2 py-1 rounded border border-amber-900 bg-amber-950/60 text-[10px] text-amber-200 hover:bg-amber-900" disabled>按台词 pause/rate 生成断点</button>
+                            </div>
+                            <div class="text-[9px] text-zinc-500">字幕由左向右推进；同一台词位置的 rate/pause 合并为一个断点。拖动共用滑轨上的标记对齐字幕位置。</div>
+                            <div id="subtitle-breakpoints" class="max-h-24 overflow-y-auto space-y-1 text-[10px] text-zinc-400"></div>
+                        </div>
                     </div>
                 </details>
                 <textarea id="dock-subtitle-text" disabled class="flex-1 min-h-0 w-full bg-zinc-950 border border-amber-900/70 rounded p-3 text-sm leading-relaxed text-zinc-100 resize-none focus:outline-none focus:border-amber-500" placeholder="输入本段要显示在画面中的字幕..."></textarea>
@@ -650,6 +700,7 @@
                 scroll: { enabled: false, layerId: '', speedX: 0, speedY: 0 },
                 rotate: { enabled: false, layerId: '', speed: 0 }
             },
+            pixelation: { enabled: false, pixelSize: 4, frameSkipEnabled: false, frameSkipInterval: 2 },
             playId: 0,
             // 位置 JSON（LayersToPNG/Spine 风格）：附件名 -> {scaleX,scaleY,offsetX,offsetY}
             framePos: {},
@@ -717,7 +768,8 @@
             audioElement: new Audio(),
             globalAudio: null,
             subtitle: {
-                enabled: false, text: '', size: 34, x: 400, y: 720,
+                enabled: false, typewriter: false, typewriterSound: true, soundWave: 'sine', soundFrequency: 880, soundVolume: 35,
+                text: '', size: 34, alignment: 'center', x: 400, y: 720,
                 color: '#ffffff', stroke: '#111827', fontFamily: 'sans-serif',
                 canvas: null, texture: null
             },
@@ -732,6 +784,50 @@
         }];
         APP.activeCharacterId = 'character_1';
         let pinyinProLoadPromise = null;
+
+        function getSpriteAnimationTexture(layer, tag, timeSec) {
+            const variant = layer.variants?.[tag];
+            const texture = variant?.spriteSheet;
+            if (!layer._spriteAnimationState || layer._spriteAnimationState.tag !== tag) {
+                layer._spriteAnimationState = { tag, startedAt: timeSec };
+            }
+            if (!texture?.imgRef) return null;
+            const width = texture.imgRef.naturalWidth || texture.imgRef.width;
+            const height = texture.imgRef.naturalHeight || texture.imgRef.height;
+            if (!width || !height) return null;
+
+            const settings = getSpriteAnimationSettings(layer, tag);
+            const columns = Math.max(1, Math.min(width, settings.columns));
+            const rows = Math.max(1, Math.min(height, settings.rows));
+            const frameCount = columns * rows;
+            const cycleDuration = frameCount / settings.speed;
+            const interval = settings.intervalSeconds;
+            const elapsed = Math.max(0, timeSec - layer._spriteAnimationState.startedAt);
+            let frameIndex;
+
+            if (settings.playCount === -1) {
+                const cycleElapsed = elapsed % (cycleDuration + interval);
+                frameIndex = cycleElapsed >= cycleDuration
+                    ? frameCount - 1
+                    : Math.min(frameCount - 1, Math.floor(cycleElapsed * settings.speed));
+            } else {
+                const totalDuration = settings.playCount * cycleDuration + (settings.playCount - 1) * interval;
+                if (elapsed >= totalDuration) return null;
+                const playIndex = Math.floor(elapsed / (cycleDuration + interval));
+                const cycleElapsed = elapsed - playIndex * (cycleDuration + interval);
+                frameIndex = cycleElapsed >= cycleDuration
+                    ? frameCount - 1
+                    : Math.min(frameCount - 1, Math.floor(cycleElapsed * settings.speed));
+            }
+
+            const cellWidth = width / columns;
+            const cellHeight = height / rows;
+            const column = frameIndex % columns;
+            const row = Math.floor(frameIndex / columns);
+            texture.uvScale = [Math.max(0, (cellWidth - 1) / width), Math.max(0, (cellHeight - 1) / height)];
+            texture.uvOffset = [(column * cellWidth + 0.5) / width, (row * cellHeight + 0.5) / height];
+            return texture;
+        }
         function preloadPinyinPro() {
             if (window.pinyinPro?.pinyin) return Promise.resolve(window.pinyinPro);
             if (pinyinProLoadPromise) return pinyinProLoadPromise;
@@ -799,6 +895,7 @@
                 const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
                 const setText = (id, value) => { const el = document.getElementById(id); if (el) el.innerText = value; };
                 const blinkEnable = document.getElementById('blink-enable'); if (blinkEnable) blinkEnable.checked = !!APP.blink.enabled;
+                setValue('preview-eye', APP.blink.enabled ? 'auto' : APP.blink.frame);
                 setValue('blink-speed', APP.blink.speed); setValue('blink-min', APP.blink.minInterval / 1000); setValue('blink-max', APP.blink.maxInterval / 1000);
                 const breathEnable = document.getElementById('breath-enable'); if (breathEnable) breathEnable.checked = !!APP.breath.enabled;
                 setValue('breath-period', APP.breath.period); setValue('breath-easing', APP.breath.easing);
@@ -845,6 +942,22 @@
         function cloneFxSlots(slots) {
             return { a: cloneFxSlot(slots && slots.a), b: cloneFxSlot(slots && slots.b) };
         }
+        function defaultSpriteAnimationSettings() {
+            return { rows: 1, columns: 1, speed: 8, playCount: -1, intervalSeconds: 0 };
+        }
+        function getSpriteAnimationSettings(layer, tag, create = true) {
+            const settings = getVariantSettings(layer, tag, create);
+            if (!settings) return defaultSpriteAnimationSettings();
+            const animation = settings.spriteAnimation || (create ? (settings.spriteAnimation = defaultSpriteAnimationSettings()) : null);
+            if (!animation) return defaultSpriteAnimationSettings();
+            animation.rows = Math.max(1, Math.floor(Number(animation.rows) || 1));
+            animation.columns = Math.max(1, Math.floor(Number(animation.columns) || 1));
+            animation.speed = Math.max(0.1, Math.min(60, Number(animation.speed) || 8));
+            const playCount = Math.floor(Number(animation.playCount));
+            animation.playCount = playCount === -1 ? -1 : Math.max(1, Number.isFinite(playCount) ? playCount : 1);
+            animation.intervalSeconds = Math.max(0, Number(animation.intervalSeconds) || 0);
+            return animation;
+        }
         function getVariantSettings(layer, tag, create = true) {
             if (!layer || !layer.variants) return null;
             const variant = layer.variants[tag] || layer.variants[Object.keys(layer.variants)[0]];
@@ -855,7 +968,8 @@
                     offsetY: layer.offsetY || 0,
                     scaleX: layer.scaleX || 1,
                     scaleY: layer.scaleY || 1,
-                    fxSlots: cloneFxSlots(layer.fxSlots)
+                    fxSlots: cloneFxSlots(layer.fxSlots),
+                    spriteAnimation: defaultSpriteAnimationSettings()
                 };
             }
             return variant.__settings || null;
@@ -994,6 +1108,17 @@
             const fsSource = `
                 precision mediump float;
                 uniform sampler2D u_image;
+                uniform int u_image_wrap;
+                uniform int u_image_atlas;
+                uniform vec2 u_image_uv_scale;
+                uniform vec2 u_image_uv_offset;
+                uniform int u_pixelation;
+                uniform float u_pixel_size;
+                uniform sampler2D u_sprite_clip;
+                uniform int u_has_sprite_clip;
+                uniform int u_sprite_clip_wrap;
+                uniform vec2 u_sprite_clip_uv_scale;
+                uniform vec2 u_sprite_clip_uv_offset;
                 uniform sampler2D u_mask_image;
                 uniform sampler2D u_noise_tex_a;
                 uniform sampler2D u_noise_tex_b;
@@ -1026,6 +1151,22 @@
                 uniform vec2 u_global_mask_offset;
                 uniform vec2 u_global_mask_scale;
                 varying vec2 v_texCoord;
+
+                vec2 snapPixelUV(vec2 uv) {
+                    if (u_pixelation == 0) return uv;
+                    float stepUV = max(1.0, u_pixel_size) / 800.0;
+                    return floor(uv / stepUV + 0.5) * stepUV;
+                }
+
+                vec4 sampleLayerImage(vec2 uv) {
+                    if (u_image_atlas == 1) {
+                        return texture2D(u_image, clamp(uv, 0.0, 1.0) * u_image_uv_scale + u_image_uv_offset);
+                    }
+                    if (u_image_wrap == 1) {
+                        return texture2D(u_image, fract(uv) * u_image_uv_scale + u_image_uv_offset);
+                    }
+                    return texture2D(u_image, uv);
+                }
 
                 // ---- Simplex 2D noise (Ashima / webgl-noise, MIT) ----
                 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
@@ -1092,7 +1233,7 @@
                     if (maskChannel != 4) {
                         // 优先使用槽位专用遮罩，否则用图层遮罩
                         vec4 mc = (hasSlotMask == 1) ? texture2D(maskTex, uv)
-                                                   : ((u_has_mask_texture == 1) ? texture2D(u_mask_image, uv) : texture2D(u_image, uv));
+                                                   : ((u_has_mask_texture == 1) ? texture2D(u_mask_image, uv) : sampleLayerImage(uv));
                         if (maskChannel == 0)      maskWeight = mc.a;
                         else if (maskChannel == 1) maskWeight = mc.r;
                         else if (maskChannel == 2) maskWeight = mc.g;
@@ -1107,6 +1248,11 @@
                     vec2 ruv = uv - 0.5;
                     float c = cos(u_rotation), s = sin(u_rotation);
                     uv = vec2(c * ruv.x - s * ruv.y, s * ruv.x + c * ruv.y) + 0.5;
+                    float edgeX = 1.0 / (800.0 * max(u_scale.x, 0.001));
+                    float edgeY = 1.0 / (800.0 * max(u_scale.y, 0.001));
+                    uv = snapPixelUV(uv);
+                    float layerCoverage = smoothstep(0.0, edgeX, uv.x) * (1.0 - smoothstep(1.0 - edgeX, 1.0, uv.x))
+                                        * smoothstep(0.0, edgeY, uv.y) * (1.0 - smoothstep(1.0 - edgeY, 1.0, uv.y));
                     if (u_scroll_loop == 1) uv = fract(uv);
                     vec2 totalOffset = vec2(0.0);
 
@@ -1121,11 +1267,21 @@
                                                   u_slot_mask_b, u_has_slot_mask_b);
                     }
 
-                    vec4 col = texture2D(u_image, uv + totalOffset);
+                    vec2 imageUV = snapPixelUV(uv + totalOffset);
+                    vec4 col = sampleLayerImage(imageUV);
+                    if (u_has_sprite_clip == 1) {
+                        vec2 clipUV = imageUV;
+                        clipUV = u_sprite_clip_wrap == 1
+                            ? fract(clipUV) * u_sprite_clip_uv_scale + u_sprite_clip_uv_offset
+                            : clamp(clipUV, 0.0, 1.0);
+                        col *= texture2D(u_sprite_clip, clipUV).a;
+                    }
+                    if (u_image_wrap == 1 || u_image_atlas == 1) col *= layerCoverage;
 
                     // 全局遮罩：maskable 的图层在遮罩外（遮罩 alpha 低）变全透明
                     if (u_has_global_mask == 1 && u_layer_maskable == 1) {
                         vec2 gmUV = (v_texCoord - 0.5) / u_global_mask_scale + 0.5 + u_global_mask_offset;
+                        gmUV = snapPixelUV(gmUV);
                         float gm = texture2D(u_global_mask, gmUV).a;
                         col.rgb *= gm;
                         col.a *= gm;
@@ -1204,6 +1360,8 @@
                 varying vec2 v_texCoord;
                 uniform sampler2D u_scene;
                 uniform float u_time;
+                uniform int u_pixelation;
+                uniform float u_pixel_size;
                 uniform int u_mode; // 0 normal 1 edge 2 chroma
                 uniform float u_flash;
                 uniform float u_crt;
@@ -1233,6 +1391,11 @@
                 uniform float u_powerScale;
                 uniform float u_blackout;
                 float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+                vec2 snapPostUV(vec2 uv) {
+                    if (u_pixelation == 0) return uv;
+                    float stepUV = max(1.0, u_pixel_size) / 800.0;
+                    return floor(uv / stepUV + 0.5) * stepUV;
+                }
                 vec3 hueRotate(vec3 c, float a) {
                     float co = cos(a), si = sin(a);
                     return clamp(vec3(
@@ -1262,15 +1425,18 @@
                         else if(u_glitchType==1) uv.x += step(0.72, hash(vec2(line, floor(u_time*u_glitchSpeed))))*n*u_glitchAmount*3.0;
                         else uv += vec2(n*u_glitchAmount, (hash(vec2(line+3.0,u_time))-0.5)*u_glitchAmount*0.25);
                     }
+                    uv = snapPostUV(uv);
                     vec4 base = texture2D(u_scene, uv);
                     vec4 col = base;
                     if(u_blur>0.0001){
                         vec2 d=vec2(u_blur/800.0);
+                        if(u_pixelation==1) d = snapPostUV(d) - snapPostUV(vec2(0.0));
                         col=(texture2D(u_scene,uv)+texture2D(u_scene,uv+vec2(d.x,0.0))+texture2D(u_scene,uv-vec2(d.x,0.0))+texture2D(u_scene,uv+vec2(0.0,d.y))+texture2D(u_scene,uv-vec2(0.0,d.y)))/5.0;
                         base=col;
                     }
                     if(u_mode==2){
                         vec2 d = vec2(u_caAmount*(1.0+0.5*sin(u_time*3.0)), u_caAmount*0.6*cos(u_time*2.3));
+                        if(u_pixelation==1) d = snapPostUV(d) - snapPostUV(vec2(0.0));
                         float r = texture2D(u_scene, uv+d).r;
                         float b = texture2D(u_scene, uv-d).b;
                         col = vec4(r, base.g, b, base.a);
@@ -1322,6 +1488,7 @@
                     float blackoutAlpha = 1.0;
                     if (u_has_global_mask == 1) {
                         vec2 gmUV = (v_texCoord - 0.5) / u_gm_scale + 0.5 + u_gm_offset;
+                        gmUV = snapPostUV(gmUV);
                         float gm = texture2D(u_global_mask, gmUV).a;
                         blackoutAlpha = gm;
                         col.rgb *= gm;
@@ -1345,7 +1512,7 @@
                 aTex: gl.getAttribLocation(postProgram, 'a_texCoord'),
                 u: {}
             };
-            ['u_scene','u_time','u_mode','u_flash','u_crt','u_crtSpacing','u_crtIntensity','u_lineColor','u_fillColor','u_caAmount','u_global_mask','u_has_global_mask','u_gm_offset','u_gm_scale','u_shake','u_glitchOn','u_glitchType','u_glitchAmount','u_glitchSpeed','u_fisheye','u_screenCurve','u_blur','u_temperature','u_snow','u_invert','u_hue','u_zoom','u_powerActive','u_powerScale','u_blackout'].forEach(n => APP.post.u[n] = gl.getUniformLocation(postProgram, n));
+            ['u_scene','u_time','u_pixelation','u_pixel_size','u_mode','u_flash','u_crt','u_crtSpacing','u_crtIntensity','u_lineColor','u_fillColor','u_caAmount','u_global_mask','u_has_global_mask','u_gm_offset','u_gm_scale','u_shake','u_glitchOn','u_glitchType','u_glitchAmount','u_glitchSpeed','u_fisheye','u_screenCurve','u_blur','u_temperature','u_snow','u_invert','u_hue','u_zoom','u_powerActive','u_powerScale','u_blackout'].forEach(n => APP.post.u[n] = gl.getUniformLocation(postProgram, n));
             gl.useProgram(postProgram);
             gl.uniform2f(gl.getUniformLocation(postProgram, 'u_resolution'), 800, 800);
         }
@@ -1357,28 +1524,51 @@
                 'u_time',
                 'u_speed_a','u_amp_x_a','u_amp_y_a','u_freq_x_a','u_freq_y_a','u_angle_a','u_enable_a','u_mask_channel_a','u_noise_mode_a','u_has_noise_a',
                 'u_speed_b','u_amp_x_b','u_amp_y_b','u_freq_x_b','u_freq_y_b','u_angle_b','u_enable_b','u_mask_channel_b','u_noise_mode_b','u_has_noise_b',
-                'u_image','u_mask_image','u_noise_tex_a','u_noise_tex_b','u_has_mask_texture','u_offset','u_scale','u_rotation','u_global_offset','u_scroll_loop',
+                'u_image','u_image_wrap','u_image_atlas','u_image_uv_scale','u_image_uv_offset','u_pixelation','u_pixel_size','u_sprite_clip','u_has_sprite_clip','u_sprite_clip_wrap','u_sprite_clip_uv_scale','u_sprite_clip_uv_offset','u_mask_image','u_noise_tex_a','u_noise_tex_b','u_has_mask_texture','u_offset','u_scale','u_rotation','u_global_offset','u_scroll_loop',
                 'u_slot_mask_a','u_slot_mask_b','u_has_slot_mask_a','u_has_slot_mask_b',
                 'u_global_mask','u_has_global_mask','u_layer_maskable','u_global_mask_offset','u_global_mask_scale'
             ].forEach(n => { U[n] = APP.gl.getUniformLocation(p, n); });
         }
 
-        // Helper to load image URL into WebGL Texture (non-repeat, for part images)
-        function loadTextureFromURL(url, premultiply = true) {
+        function loadTextureFromURL(url, premultiply = true, repeat = false) {
             const gl = APP.gl;
             const texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+            texture.imageWrap = !!repeat;
+            texture.uvScale = [1, 1];
+            texture.uvOffset = [0, 0];
 
             const img = new Image();
             img.crossOrigin = "anonymous";
+            texture.imgRef = img;
             img.onload = () => {
+                let source = img;
+                if (repeat && (!Number.isInteger(Math.log2(img.width)) || !Number.isInteger(Math.log2(img.height)))) {
+                    const nextPowerOfTwo = value => 2 ** Math.ceil(Math.log2(value));
+                    const padded = document.createElement('canvas');
+                    padded.width = nextPowerOfTwo(img.width + 2);
+                    padded.height = nextPowerOfTwo(img.height + 2);
+                    const context = padded.getContext('2d');
+                    const pattern = context?.createPattern(img, 'repeat');
+                    if (pattern) {
+                        context.translate(1, 1);
+                        context.fillStyle = pattern;
+                        context.fillRect(-img.width, -img.height, padded.width + img.width, padded.height + img.height);
+                        source = padded;
+                        texture.uvScale = [img.width / padded.width, img.height / padded.height];
+                        texture.uvOffset = [1 / padded.width, 1 / padded.height];
+                    } else {
+                        texture.imageWrap = false;
+                    }
+                }
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !!premultiply);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                const wrapMode = texture.imageWrap ? gl.REPEAT : gl.CLAMP_TO_EDGE;
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapMode);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapMode);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 texture.imgRef = img; // 保存 img 引用，用于差分弹窗缩略图预览
@@ -2145,7 +2335,8 @@
                 if (frames.__settings) clone.__settings = {
                     offsetX: frames.__settings.offsetX || 0, offsetY: frames.__settings.offsetY || 0,
                     scaleX: frames.__settings.scaleX || 1, scaleY: frames.__settings.scaleY || 1,
-                    fxSlots: cloneFxSlots(frames.__settings.fxSlots)
+                    fxSlots: cloneFxSlots(frames.__settings.fxSlots),
+                    spriteAnimation: { ...defaultSpriteAnimationSettings(), ...(frames.__settings.spriteAnimation || {}) }
                 };
                 return [tag, clone];
             })) : null;
@@ -2153,6 +2344,7 @@
                 ...source,
                 ...(copyIdentity ? { id: `${source.id || 'layer'}_copy_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, name: `${source.name} 副本` } : {}),
                 variants,
+                _spriteAnimationState: null,
                 fxSlots: cloneFxSlots(source.fxSlots)
             };
         }
@@ -2262,12 +2454,36 @@
             slots.forEach(slot => {
                 const tex = variantObj[slot.key];
                 const hasImg = tex && tex.imgRef;
+                const spriteTexture = slot.key === 'main' ? variantObj.spriteSheet : null;
+                const spriteSettings = slot.key === 'main' ? getSpriteAnimationSettings(layer, modalCurrentTag) : null;
                 const box = document.createElement('div');
-                box.className = "bg-zinc-950 p-2 rounded border border-zinc-800 flex items-center gap-3";
+                box.className = "bg-zinc-950 p-2 rounded border border-zinc-800 flex flex-wrap items-center gap-3";
                 box.innerHTML = `
                     <div class="thumb-box ${hasImg ? '' : 'empty'}" title="${hasImg ? '点击重新上传替换图片' : '点击上传图片'}" onclick="triggerSubframeUpload('${slot.key}')">
                         ${hasImg ? `<img src="${tex.imgRef.src}">` : '<i class="fa-solid fa-plus text-zinc-600"></i>'}
                     </div>
+                    ${slot.key === 'main' ? `
+                    <div class="flex items-center gap-2 border-l border-zinc-800 pl-2">
+                        <div class="h-16 w-16 shrink-0 overflow-hidden rounded border border-zinc-700 bg-zinc-900 cursor-pointer ${spriteTexture?.imgRef ? '' : 'flex items-center justify-center'}" title="${spriteTexture?.imgRef ? '精灵表缩略图，点击替换' : '精灵表缩略图'}" onclick="triggerSubframeUpload('spriteSheet')">
+                            ${spriteTexture?.imgRef ? `<img src="${spriteTexture.imgRef.src}" class="h-full w-full object-contain">` : '<i class="fa-solid fa-film text-zinc-600"></i>'}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="mb-0.5 text-[9px] text-zinc-300">精灵表</div>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="triggerSubframeUpload('spriteSheet')" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] text-zinc-200">上传</button>
+                                <button type="button" onclick="deleteSubframeImage('spriteSheet')" class="px-1.5 py-0.5 bg-red-950 hover:bg-red-900 rounded text-[9px] text-red-300" ${spriteTexture ? '' : 'disabled'}>删除</button>
+                            </div>
+                            <div class="mt-1 grid grid-cols-3 gap-x-1 gap-y-0.5 text-[9px] text-zinc-400">
+                                <label title="行数">行数 <input type="number" min="1" max="1000" step="1" value="${spriteSettings.rows}" onchange="updateSpriteAnimationSetting('rows', this.value)" ${spriteTexture ? '' : 'disabled'} class="w-9 bg-zinc-900 border border-zinc-700 rounded px-0.5 text-zinc-200"></label>
+                                <label title="列数">列数 <input type="number" min="1" max="1000" step="1" value="${spriteSettings.columns}" onchange="updateSpriteAnimationSetting('columns', this.value)" ${spriteTexture ? '' : 'disabled'} class="w-9 bg-zinc-900 border border-zinc-700 rounded px-0.5 text-zinc-200"></label>
+                                <label title="播放速度（帧/秒）">帧率 <input type="number" min="0.1" max="60" step="0.1" value="${spriteSettings.speed}" onchange="updateSpriteAnimationSetting('speed', this.value)" ${spriteTexture ? '' : 'disabled'} class="w-10 bg-zinc-900 border border-zinc-700 rounded px-0.5 text-zinc-200"></label>
+                                <label title="播放次数，-1 为循环">播放次数 <input type="number" min="-1" max="1000" step="1" value="${spriteSettings.playCount}" onchange="updateSpriteAnimationSetting('playCount', this.value)" ${spriteTexture ? '' : 'disabled'} class="w-9 bg-zinc-900 border border-zinc-700 rounded px-0.5 text-zinc-200"></label>
+                                <label title="两次播放的间隔（秒）">间隔(s) <input type="number" min="0" max="3600" step="0.1" value="${spriteSettings.intervalSeconds}" onchange="updateSpriteAnimationSetting('intervalSeconds', this.value)" ${spriteTexture ? '' : 'disabled'} class="w-10 bg-zinc-900 border border-zinc-700 rounded px-0.5 text-zinc-200"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" accept="image/*" class="hidden" id="subframe-file-spriteSheet" onchange="handleSubframeFile('spriteSheet', this.files[0])">
+                    ` : ''}
                     <div class="flex-1">
                         <div class="font-medium text-zinc-200">${slot.label}</div>
                         <div class="text-[10px] text-zinc-500 mt-0.5">${hasImg ? '点击缩略图可替换素材' : '尚未上传图片'}</div>
@@ -2295,6 +2511,7 @@
                     const layer = APP.layers[editingLayerIdx];
                     if (!layer.variants[modalCurrentTag]) layer.variants[modalCurrentTag] = {};
                     layer.variants[modalCurrentTag][frameKey] = createTextureFromImage(APP.gl, img, false, true);
+                    if (frameKey === 'spriteSheet') layer._spriteAnimationState = null;
                     document.getElementById('status-indicator').innerText = `更新 Tag【${modalCurrentTag}】${frameKey} 帧成功`;
                     rebuildSlotThumbnails();
                     refreshVariantSelectors();
@@ -2310,8 +2527,22 @@
             if (!variant || !variant[frameKey]) return;
             if (!confirm(`确定删除差分【${modalCurrentTag}】的 ${frameKey} 图片吗？`)) return;
             variant[frameKey] = null;
+            if (frameKey === 'spriteSheet') APP.layers[editingLayerIdx]._spriteAnimationState = null;
             rebuildSlotThumbnails();
             document.getElementById('status-indicator').innerText = `已删除 Tag【${modalCurrentTag}】的 ${frameKey} 图片`;
+        };
+
+        window.updateSpriteAnimationSetting = (key, value) => {
+            const layer = APP.layers[editingLayerIdx];
+            if (!layer) return;
+            const animation = getSpriteAnimationSettings(layer, modalCurrentTag);
+            const numericValue = Number(value);
+            if (!Number.isFinite(numericValue)) return;
+            if (key === 'rows' || key === 'columns') animation[key] = Math.max(1, Math.floor(numericValue));
+            else if (key === 'speed') animation.speed = Math.max(0.1, Math.min(60, numericValue));
+            else if (key === 'playCount') animation.playCount = Math.floor(numericValue) === -1 ? -1 : Math.max(1, Math.floor(numericValue));
+            else if (key === 'intervalSeconds') animation.intervalSeconds = Math.max(0, numericValue);
+            layer._spriteAnimationState = null;
         };
 
         document.getElementById('modal-active-tag').addEventListener('change', (e) => {
@@ -2450,9 +2681,101 @@
         }
 
         let lastTime = performance.now();
+        let typewriterAudioContext = null;
 
+        function getTypewriterAudioContext() {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) return null;
+            if (!typewriterAudioContext) typewriterAudioContext = new AudioContextClass();
+            if (typewriterAudioContext.state === 'suspended') typewriterAudioContext.resume().catch(() => {});
+            return typewriterAudioContext;
+        }
+
+        function playTypewriterCharacterSound(delay = 0) {
+            const settings = APP.subtitle.activeSoundSettings || defaultSubtitleSoundSettings();
+            if (!APP.subtitle.enabled || !settings.enabled || settings.volume <= 0) return;
+            const context = getTypewriterAudioContext();
+            if (!context) return;
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            const start = context.currentTime + delay;
+            const waves = ['sine', 'triangle', 'square', 'sawtooth'];
+            oscillator.type = waves.includes(settings.wave) ? settings.wave : 'sine';
+            oscillator.frequency.setValueAtTime(Math.max(100, Math.min(5000, Number(settings.frequency) || 880)), start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(0.12 * Math.max(0, Math.min(200, settings.volume)) / 100, start + 0.004);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.045);
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+            oscillator.start(start);
+            oscillator.stop(start + 0.05);
+        }
+
+        function plainSubtitleText(text) {
+            return String(text || '').replace(/\[[^\]]*\]/g, '').replace(/\r\n/g, '\n').trim();
+        }
         function setSubtitleText(text) {
-            APP.subtitle.text = String(text || '').replace(/\[[^\]]*\]/g, '').replace(/\r\n/g, '\n').trim();
+            APP.subtitle.revealState = null;
+            APP.subtitle.text = plainSubtitleText(text);
+        }
+        function prepareSubtitleForSegment(segment) {
+            APP.subtitle.activeSoundSettings = getSubtitleSoundSettings(segment);
+            APP.subtitle.typewriter = !!segment?.subtitleTypewriter;
+            const subtitleText = plainSubtitleText(segment?.subtitle);
+            const dialogueLength = parseTokens(String(segment?.text || '').trim()).filter(token => token.type === 'char').length;
+            if (!segment?.subtitleTypewriter || !dialogueLength || !subtitleText) {
+                setSubtitleText(subtitleText);
+                return;
+            }
+            const subtitleLength = Array.from(subtitleText).length;
+            const points = (Array.isArray(segment.subtitleBreaks) ? segment.subtitleBreaks : [])
+                .map((point, index) => ({
+                    dialogueOffset: Math.max(0, Math.min(dialogueLength, Math.floor(Number(point.dialogueOffset) || 0))),
+                    subtitleOffset: Math.max(0, Math.min(subtitleLength, Math.floor(Number(point.subtitleOffset) || 0))),
+                    index
+                }))
+                .sort((a, b) => a.dialogueOffset - b.dialogueOffset || a.index - b.index);
+            const anchors = [{ dialogueOffset: 0, subtitleOffset: 0 }];
+            let previousSubtitleOffset = 0;
+            for (const point of points) {
+                previousSubtitleOffset = Math.max(previousSubtitleOffset, point.subtitleOffset);
+                anchors.push({ dialogueOffset: point.dialogueOffset, subtitleOffset: previousSubtitleOffset });
+            }
+            anchors.push({ dialogueOffset: dialogueLength, subtitleOffset: subtitleLength });
+            APP.subtitle.revealState = { text: subtitleText, dialogueLength, sourceOffset: 0, revealed: 0, anchors };
+            APP.subtitle.text = '';
+            updateSubtitleReveal();
+        }
+        function updateSubtitleReveal() {
+            const state = APP.subtitle.revealState;
+            if (!state) return;
+            const offset = Math.min(state.dialogueLength, state.sourceOffset);
+            let left = state.anchors[0], right = state.anchors[state.anchors.length - 1];
+            for (let i = 1; i < state.anchors.length; i++) {
+                const point = state.anchors[i];
+                if (point.dialogueOffset < offset) { left = point; continue; }
+                if (point.dialogueOffset === offset) {
+                    left = point;
+                    while (i + 1 < state.anchors.length && state.anchors[i + 1].dialogueOffset === offset) left = state.anchors[++i];
+                    right = left;
+                    break;
+                }
+                right = point;
+                break;
+            }
+            const ratio = right.dialogueOffset <= left.dialogueOffset ? 0
+                : (offset - left.dialogueOffset) / (right.dialogueOffset - left.dialogueOffset);
+            const mappedOffset = Math.round(left.subtitleOffset + (right.subtitleOffset - left.subtitleOffset) * ratio);
+            const previousReveal = state.revealed;
+            state.revealed = Math.max(state.revealed, Math.min(Array.from(state.text).length, mappedOffset));
+            const addedCharacters = Array.from(state.text).slice(previousReveal, state.revealed).filter(char => !/[\s\p{P}]/u.test(char));
+            addedCharacters.forEach((_, index) => playTypewriterCharacterSound(index * 0.05));
+            APP.subtitle.text = Array.from(state.text).slice(0, state.revealed).join('');
+        }
+        function finishSubtitleReveal() {
+            if (!APP.subtitle.revealState) return;
+            APP.subtitle.text = APP.subtitle.revealState.text;
+            APP.subtitle.revealState = null;
         }
         function updateSubtitleTexture() {
             const sub = APP.subtitle;
@@ -2464,7 +2787,7 @@
             const ctx = sub.canvas.getContext('2d');
             ctx.clearRect(0, 0, 800, 800);
             ctx.font = `${Math.max(12, sub.size || 34)}px "${sub.fontFamily || 'sans-serif'}"`;
-            ctx.textAlign = 'center';
+            ctx.textAlign = ['left', 'center', 'right'].includes(sub.alignment) ? sub.alignment : 'center';
             ctx.textBaseline = 'middle';
             ctx.lineJoin = 'round';
             ctx.lineWidth = Math.max(2, Math.round((sub.size || 34) * 0.14));
@@ -2481,13 +2804,14 @@
                 lines.push(line);
             });
             const lineHeight = Math.round((sub.size || 34) * 1.3);
-            const startY = (sub.y || 720) - (lines.length - 1) * lineHeight / 2;
+            const startY = (sub.y ?? 720) - (lines.length - 1) * lineHeight / 2;
+            const textX = sub.x ?? 400;
             lines.forEach((lineText, index) => {
                 const y = startY + index * lineHeight;
                 ctx.strokeStyle = sub.stroke || '#111827';
                 ctx.fillStyle = sub.color || '#ffffff';
-                ctx.strokeText(lineText, sub.x || 400, y);
-                ctx.fillText(lineText, sub.x || 400, y);
+                ctx.strokeText(lineText, textX, y);
+                ctx.fillText(lineText, textX, y);
             });
             const gl = APP.gl;
             if (!sub.texture) sub.texture = createTextureFromImage(gl, sub.canvas, false, true);
@@ -2508,6 +2832,7 @@
             const tag = layer.currentTag || 'default';
             let texToDraw = null;
             let layerMask = layer.maskTexture;
+            let spriteClipTexture = null;
             let slotMaskA = null, slotMaskB = null;
             const v = layer.variants ? layer.variants[tag] : null;
             const variantSettings = getVariantSettings(layer, tag);
@@ -2516,6 +2841,7 @@
                 if (v) {
                     // v = { main, mask, slotAMask, slotBMask }
                     texToDraw = v.main || layer.texture;
+                    spriteClipTexture = v.main || layer.texture;
                     if (v.mask !== undefined) layerMask = v.mask;
                     if (v.slotAMask) slotMaskA = v.slotAMask;
                     if (v.slotBMask) slotMaskB = v.slotBMask;
@@ -2531,14 +2857,25 @@
                 const variant = (layer.variants && layer.variants[tag]) || layer.variants?.[keys[0]];
                 if (variant) texToDraw = variant[APP.mouth.phoneme];
             }
+            let atlasFrame = false;
+            const spriteTexture = getSpriteAnimationTexture(layer, tag, timeSec);
+            if (spriteTexture) {
+                texToDraw = spriteTexture;
+                atlasFrame = true;
+            }
             if (!texToDraw) return;
 
             const slots = (variantSettings && variantSettings.fxSlots) || layer.fxSlots || { a: makeFxSlot(), b: makeFxSlot() };
             const a = slots.a;
             const b = slots.b;
             const masterOn = layer.fx;
+            const pixelation = APP.pixelation || {};
+            const pixelationEnabled = !!pixelation.enabled && !layer.pixelationExcluded;
+            const pixelStep = Math.max(1, Number(pixelation.pixelSize) || 4) / 800;
 
             gl.uniform1f(U.u_time, timeSec);
+            gl.uniform1i(U.u_pixelation, pixelationEnabled ? 1 : 0);
+            gl.uniform1f(U.u_pixel_size, pixelationEnabled ? pixelation.pixelSize : 1);
             // 图层位置/大小微调
             // 图层位置/大小微调（位置 JSON 给出基准，手动滑块在此之上叠加）
             const fp = APP.framePos[currentAttachmentName(layer)];
@@ -2573,10 +2910,20 @@
             const scrollY = scroll.enabled && scroll.layerId === layer.id ? (scroll.speedY || 0) * timeSec : 0;
             const rotate = motion.rotate;
             const rotation = rotate.enabled && rotate.layerId === layer.id ? (rotate.speed || 0) * timeSec * Math.PI / 180 : 0;
-            gl.uniform2f(U.u_offset, baseOffX + (transform.offsetX || 0) + scrollX, baseOffY + (transform.offsetY || 0) + breathY + scrollY);
-            gl.uniform2f(U.u_scale, baseScX * (transform.scaleX || 1), baseScY * (transform.scaleY || 1));
+            const scaleX = baseScX * (transform.scaleX || 1);
+            const scaleY = baseScY * (transform.scaleY || 1);
+            const rawOffsetX = baseOffX + (transform.offsetX || 0) + scrollX;
+            const rawOffsetY = baseOffY + (transform.offsetY || 0) + breathY + scrollY;
+            const snapLayerOffset = (value, scale) => pixelationEnabled
+                ? Math.round(value * scale / pixelStep) * pixelStep / (Math.abs(scale) || 1)
+                : value;
+            gl.uniform2f(U.u_offset, snapLayerOffset(rawOffsetX, scaleX), snapLayerOffset(rawOffsetY, scaleY));
+            gl.uniform2f(U.u_scale, scaleX, scaleY);
             gl.uniform1f(U.u_rotation, rotation);
-            gl.uniform2f(U.u_global_offset, layer.motionExcluded ? 0 : (motion.offsetX || 0), layer.motionExcluded ? 0 : (motion.offsetY || 0));
+            const snapGlobalOffset = value => pixelationEnabled ? Math.round(value / pixelStep) * pixelStep : value;
+            gl.uniform2f(U.u_global_offset,
+                layer.motionExcluded ? 0 : snapGlobalOffset(motion.offsetX || 0),
+                layer.motionExcluded ? 0 : snapGlobalOffset(motion.offsetY || 0));
             gl.uniform1i(U.u_scroll_loop, scroll.enabled && scroll.layerId === layer.id ? 1 : 0);
 
             // 槽位 A
@@ -2678,15 +3025,44 @@
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texToDraw);
             gl.uniform1i(U.u_image, 0);
+            gl.uniform1i(U.u_image_atlas, atlasFrame ? 1 : 0);
+            gl.uniform1i(U.u_image_wrap, texToDraw.imageWrap ? 1 : 0);
+            gl.uniform2f(U.u_image_uv_scale, ...(texToDraw.uvScale || [1, 1]));
+            gl.uniform2f(U.u_image_uv_offset, ...(texToDraw.uvOffset || [0, 0]));
+            gl.activeTexture(gl.TEXTURE7);
+            if (atlasFrame && spriteClipTexture) {
+                gl.bindTexture(gl.TEXTURE_2D, spriteClipTexture);
+                gl.uniform1i(U.u_sprite_clip, 7);
+                gl.uniform1i(U.u_has_sprite_clip, 1);
+                gl.uniform1i(U.u_sprite_clip_wrap, spriteClipTexture.imageWrap ? 1 : 0);
+                gl.uniform2f(U.u_sprite_clip_uv_scale, ...(spriteClipTexture.uvScale || [1, 1]));
+                gl.uniform2f(U.u_sprite_clip_uv_offset, ...(spriteClipTexture.uvOffset || [0, 0]));
+            } else {
+                gl.uniform1i(U.u_has_sprite_clip, 0);
+            }
 
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
-        function renderLoop(time) {
+        function renderLoop(time, scheduleNext = true) {
             const deltaMs = time - lastTime;
             lastTime = time;
 
             updateBlinkEngine(deltaMs);
+
+            const pixelation = APP.pixelation || {};
+            const pixelationEnabled = !!pixelation.enabled;
+            const pixelSize = Math.max(1, Number(pixelation.pixelSize) || 4);
+            if (scheduleNext && pixelation.frameSkipEnabled) {
+                const interval = Math.max(2, Math.floor(Number(pixelation.frameSkipInterval) || 2));
+                APP.previewFrameCounter = ((APP.previewFrameCounter || 0) + 1) % interval;
+                if (APP.previewFrameCounter !== 0) {
+                    requestAnimationFrame(renderLoop);
+                    return;
+                }
+            } else if (!pixelation.frameSkipEnabled) {
+                APP.previewFrameCounter = 0;
+            }
 
             const gl = APP.gl;
             const timeSec = time * 0.001;
@@ -2722,6 +3098,8 @@
             gl.bindTexture(gl.TEXTURE_2D, APP.post.sceneTex);
             gl.uniform1i(APP.post.u.u_scene, 0);
             gl.uniform1f(APP.post.u.u_time, timeSec);
+            gl.uniform1i(APP.post.u.u_pixelation, pixelationEnabled ? 1 : 0);
+            gl.uniform1f(APP.post.u.u_pixel_size, pixelationEnabled ? pixelSize : 1);
             const fx = APP.fx;
             const mode = fx.edge.on ? 1 : (fx.chroma.on ? 2 : 0);
             gl.uniform1i(APP.post.u.u_mode, mode);
@@ -2770,6 +3148,11 @@
                 shakeUVX = ((sx * (1 - rnd) + (Math.random()*2-1) * rnd) * fx.shakeAmp * decay) / 800;
                 shakeUVY = ((sy * (1 - rnd) + (Math.random()*2-1) * rnd) * fx.shakeAmp * decay) / 800;
             }
+            if (pixelationEnabled) {
+                const pixelStep = pixelSize / 800;
+                shakeUVX = Math.round(shakeUVX / pixelStep) * pixelStep;
+                shakeUVY = Math.round(shakeUVY / pixelStep) * pixelStep;
+            }
             gl.uniform2f(APP.post.u.u_shake, shakeUVX, shakeUVY);
             // 全局遮罩（后处理末尾再裁剪一次）
             const gm = APP.globalMask || {};
@@ -2794,13 +3177,14 @@
                 gl.vertexAttribPointer(APP.mainAttribs.aTex, 2, gl.FLOAT, false, 0, 0);
                 renderLayer(gl, APP.program, {
                     visible: true, type: 'static', texture: subtitleTexture,
-                    fx: false, maskable: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, motionExcluded: true
+                    fx: false, maskable: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, motionExcluded: true,
+                    pixelationExcluded: true
                 }, timeSec);
             }
 
             applyEffectsFrame();
             if (window.updateTransformOverlay) window.updateTransformOverlay();
-            requestAnimationFrame(renderLoop);
+            if (scheduleNext) requestAnimationFrame(renderLoop);
         }
 
         // ============ 台词解析与播放引擎（分段 / TTS同步 / Tag切换） ============
@@ -2831,7 +3215,7 @@
                 if (/^(pause|rate)$/.test(tag)) return 'text-amber-300 border-amber-700/50 bg-amber-950/50';
                 if (/^(lip|auto)$/.test(tag)) return 'text-green-300 border-green-700/50 bg-green-950/50';
                 if (/^(eye|mouth|var|blink|breath)$/.test(tag)) return 'text-sky-300 border-sky-700/50 bg-sky-950/50';
-                if (/^(shake|flash|hue|crt|line|ca)$/.test(tag)) return 'text-fuchsia-300 border-fuchsia-700/50 bg-fuchsia-950/50';
+                if (/^(shake|flash|hue|crt|line|ca|pixelate)$/.test(tag)) return 'text-fuchsia-300 border-fuchsia-700/50 bg-fuchsia-950/50';
                 return 'text-purple-300 border-purple-700/50 bg-purple-950/50';
             };
             return escapeHTML(text).replace(/\[([a-zA-Z_][a-zA-Z0-9_-]*)(?::[^\]]+)?\]/g, (all, tag) => `<span class="editable-control-tag inline-block px-1 rounded border ${colorOf(tag)}" data-control-tag="true" title="点击编辑控制语句">${all}</span>`).replace(/\n/g, '<br>');
@@ -3109,6 +3493,38 @@
             controlEditorSnapshot = snapshot;
             controlEditorRestoring = false;
         }
+        function defaultSubtitleSoundSettings() {
+            return {
+                enabled: APP.subtitle.typewriterSound !== false,
+                wave: APP.subtitle.soundWave || 'sine',
+                frequency: Number(APP.subtitle.soundFrequency) || 880,
+                volume: Number(APP.subtitle.soundVolume) || 35
+            };
+        }
+        function getSubtitleSoundSettings(segment) {
+            if (!segment) return defaultSubtitleSoundSettings();
+            segment.subtitleSound = { ...defaultSubtitleSoundSettings(), ...(segment.subtitleSound || {}) };
+            const settings = segment.subtitleSound;
+            settings.enabled = settings.enabled !== false;
+            settings.wave = ['sine', 'triangle', 'square', 'sawtooth'].includes(settings.wave) ? settings.wave : 'sine';
+            settings.frequency = Math.max(220, Math.min(1760, Number(settings.frequency) || 880));
+            settings.volume = Math.max(0, Math.min(200, Number(settings.volume) || 0));
+            return settings;
+        }
+        function syncSubtitleSoundControls(segment) {
+            const settings = getSubtitleSoundSettings(segment);
+            const enabled = Boolean(segment);
+            document.getElementById('subtitle-typewriter-sound').disabled = !enabled;
+            document.getElementById('subtitle-sound-wave').disabled = !enabled;
+            document.getElementById('subtitle-sound-frequency').disabled = !enabled;
+            document.getElementById('subtitle-sound-volume').disabled = !enabled;
+            document.getElementById('subtitle-typewriter-sound').checked = settings.enabled;
+            document.getElementById('subtitle-sound-wave').value = settings.wave;
+            document.getElementById('subtitle-sound-frequency').value = settings.frequency;
+            document.getElementById('subtitle-sound-frequency-value').textContent = `${settings.frequency} Hz`;
+            document.getElementById('subtitle-sound-volume').value = settings.volume;
+            document.getElementById('subtitle-sound-volume-value').textContent = `${settings.volume}%`;
+        }
         function selectSegmentForEditor(index) {
             const segment = APP.segments[index];
             const subtitle = document.getElementById('dock-subtitle-text');
@@ -3128,7 +3544,164 @@
             if (segment) window.focusedControlEditor = preview;
             resetControlEditorHistory(segment, segment?.text || '');
             subtitle.value = segment?.subtitle || '';
+            APP.subtitle.typewriter = !!segment?.subtitleTypewriter;
+            syncSubtitleSoundControls(segment);
+            renderSubtitleBreakpoints(APP.editingSegmentIndex);
             renderEditableScript(preview, segment?.text || '');
+        }
+        function renderSubtitleBreakpoints(index = APP.editingSegmentIndex) {
+            const segment = APP.segments[index];
+            const enabled = document.getElementById('subtitle-typewriter');
+            const generate = document.getElementById('subtitle-generate-breaks');
+            const container = document.getElementById('subtitle-breakpoints');
+            if (!enabled || !generate || !container) return;
+            enabled.disabled = !segment;
+            generate.disabled = !segment;
+            enabled.checked = !!segment?.subtitleTypewriter;
+            container.replaceChildren();
+            if (!segment) return;
+            const subtitleLength = Array.from(plainSubtitleText(segment.subtitle)).length;
+            const subtitleChars = Array.from(plainSubtitleText(segment.subtitle));
+            const groupedPoints = new Map();
+            for (const point of Array.isArray(segment.subtitleBreaks) ? segment.subtitleBreaks : []) {
+                const dialogueOffset = Math.max(0, Math.floor(Number(point.dialogueOffset) || 0));
+                const tags = Array.isArray(point.tags) && point.tags.length
+                    ? point.tags
+                    : [{ tag: point.tag || 'control', value: point.value || '' }];
+                if (!groupedPoints.has(dialogueOffset)) {
+                    groupedPoints.set(dialogueOffset, {
+                        dialogueOffset,
+                        subtitleOffset: Math.max(0, Math.min(subtitleLength, Math.floor(Number(point.subtitleOffset) || 0))),
+                        tags: []
+                    });
+                }
+                const group = groupedPoints.get(dialogueOffset);
+                group.subtitleOffset = Math.max(group.subtitleOffset, Math.max(0, Math.min(subtitleLength, Math.floor(Number(point.subtitleOffset) || 0))));
+                group.tags.push(...tags.map(tag => ({ tag: tag.tag || 'control', value: tag.value || '' })));
+            }
+            segment.subtitleBreaks = [...groupedPoints.values()];
+            const points = segment.subtitleBreaks;
+            let alignmentTrack = null;
+            let sliderTrack = null;
+            if (subtitleChars.length) {
+                const viewport = document.createElement('div');
+                viewport.className = 'overflow-x-auto rounded border border-zinc-800 bg-zinc-900/50';
+                alignmentTrack = document.createElement('div');
+                alignmentTrack.style.width = `max(100%, ${Math.max(1, subtitleChars.length) * 24}px)`;
+                const textRow = document.createElement('div');
+                textRow.className = 'grid gap-px pt-1';
+                textRow.style.gridTemplateColumns = `repeat(${subtitleChars.length}, minmax(0, 1fr))`;
+                subtitleChars.forEach((char, charIndex) => {
+                    const cell = document.createElement('span');
+                    cell.className = 'min-w-0 overflow-hidden border-b border-zinc-700 px-0.5 text-center text-[10px] leading-5 text-amber-100';
+                    cell.textContent = char === '\n' ? '↵' : char === ' ' ? '·' : char;
+                    cell.title = `字幕第 ${charIndex + 1} 字`;
+                    textRow.appendChild(cell);
+                });
+                const direction = document.createElement('div');
+                direction.className = 'flex w-full items-center justify-between gap-1 py-1 text-[9px] text-amber-400';
+                direction.innerHTML = document.documentElement.lang === 'en'
+                    ? '<span>Start</span><i class="fa-solid fa-arrow-right"></i><span>End</span>'
+                    : '<span>起点</span><i class="fa-solid fa-arrow-right"></i><span>终点</span>';
+                sliderTrack = document.createElement('div');
+                sliderTrack.className = 'relative my-1 h-7 touch-none rounded bg-zinc-800/70';
+                sliderTrack.style.backgroundImage = 'linear-gradient(to bottom, transparent calc(50% - 1px), #52525b calc(50% - 1px), #52525b calc(50% + 1px), transparent calc(50% + 1px))';
+                sliderTrack.setAttribute('role', 'group');
+                sliderTrack.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Subtitle checkpoint slider' : '字幕断点滑轨');
+                alignmentTrack.append(textRow, sliderTrack, direction);
+                viewport.appendChild(alignmentTrack);
+                container.appendChild(viewport);
+            }
+            if (!points.length) {
+                const empty = document.createElement('div');
+                empty.textContent = document.documentElement.lang === 'en'
+                    ? 'No breaks yet. Generate them from pause/rate tags in the dialogue.'
+                    : '尚无断点；点击上方按钮读取台词中的 pause/rate。';
+                container.appendChild(empty);
+                return;
+            }
+            const formatPosition = value => document.documentElement.lang === 'en' ? `after ${value} chars` : `第 ${value} 字后`;
+            const pointTags = point => Array.isArray(point.tags) && point.tags.length
+                ? point.tags
+                : [{ tag: point.tag || 'control', value: point.value || '' }];
+            const pointLabels = points.map(point => pointTags(point).map(item => `[${item.tag}:${item.value}]`).join(' + '));
+            const collisions = new Map();
+            const pointLanes = points.map(point => {
+                const offset = Math.max(0, Math.min(subtitleLength, Math.floor(Number(point.subtitleOffset) || 0)));
+                point.subtitleOffset = offset;
+                const lane = collisions.get(offset) || 0;
+                collisions.set(offset, lane + 1);
+                return lane;
+            });
+            if (sliderTrack) sliderTrack.style.height = `${Math.max(28, Math.max(0, ...pointLanes) * 13 + 16)}px`;
+            points.forEach((point, pointIndex) => {
+                const label = pointLabels[pointIndex];
+                const marker = document.createElement('button');
+                marker.type = 'button';
+                marker.className = 'absolute z-10 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2 border-amber-200 bg-amber-500 shadow hover:scale-125 focus:outline-none focus:ring-2 focus:ring-amber-300';
+                marker.style.left = `${subtitleLength ? point.subtitleOffset / subtitleLength * 100 : 0}%`;
+                marker.style.top = `${5 + pointLanes[pointIndex] * 13}px`;
+                marker.title = `${label} · ${formatPosition(point.subtitleOffset)}`;
+                marker.setAttribute('role', 'slider');
+                marker.setAttribute('aria-label', `${label} ${document.documentElement.lang === 'en' ? 'subtitle position' : '字幕位置'}`);
+                marker.setAttribute('aria-valuemin', '0');
+                marker.setAttribute('aria-valuemax', String(subtitleLength));
+                marker.setAttribute('aria-valuenow', String(point.subtitleOffset));
+                marker.tabIndex = subtitleLength ? 0 : -1;
+                marker.disabled = subtitleLength === 0;
+
+                const updatePoint = value => {
+                    point.subtitleOffset = Math.max(0, Math.min(subtitleLength, Math.round(value)));
+                    marker.style.left = `${subtitleLength ? point.subtitleOffset / subtitleLength * 100 : 0}%`;
+                    marker.setAttribute('aria-valuenow', String(point.subtitleOffset));
+                    marker.title = `${label} · ${formatPosition(point.subtitleOffset)}`;
+                };
+                const updateFromPointer = event => {
+                    if (!subtitleLength || !sliderTrack) return;
+                    const rect = sliderTrack.getBoundingClientRect();
+                    updatePoint((event.clientX - rect.left) / rect.width * subtitleLength);
+                };
+                marker.addEventListener('pointerdown', event => {
+                    if (!subtitleLength) return;
+                    event.preventDefault();
+                    marker.setPointerCapture(event.pointerId);
+                    updateFromPointer(event);
+                });
+                marker.addEventListener('pointermove', event => {
+                    if (marker.hasPointerCapture(event.pointerId)) updateFromPointer(event);
+                });
+                marker.addEventListener('keydown', event => {
+                    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') updatePoint(point.subtitleOffset - 1);
+                    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') updatePoint(point.subtitleOffset + 1);
+                    else if (event.key === 'Home') updatePoint(0);
+                    else if (event.key === 'End') updatePoint(subtitleLength);
+                    else return;
+                    event.preventDefault();
+                });
+                if (sliderTrack) sliderTrack.appendChild(marker);
+            });
+        }
+        function generateSubtitleBreakpoints(segment) {
+            const tokens = parseTokens(String(segment.text || '').trim());
+            const dialogueLength = tokens.filter(token => token.type === 'char').length;
+            const subtitleLength = Array.from(plainSubtitleText(segment.subtitle)).length;
+            let dialogueOffset = 0;
+            const groupedBreaks = new Map();
+            for (const token of tokens) {
+                if (token.type === 'char') dialogueOffset++;
+                else if (token.type === 'tag' && (token.tag === 'pause' || token.tag === 'rate')) {
+                    if (!groupedBreaks.has(dialogueOffset)) {
+                        groupedBreaks.set(dialogueOffset, {
+                            dialogueOffset,
+                            subtitleOffset: dialogueLength ? Math.round(dialogueOffset / dialogueLength * subtitleLength) : 0,
+                            tags: []
+                        });
+                    }
+                    groupedBreaks.get(dialogueOffset).tags.push({ tag: token.tag, value: token.val || '' });
+                }
+            }
+            segment.subtitleBreaks = [...groupedBreaks.values()];
+            renderSubtitleBreakpoints(APP.editingSegmentIndex);
         }
         function updateSegmentEditorBindings() {
             const subtitle = document.getElementById('dock-subtitle-text');
@@ -3137,6 +3710,11 @@
                 const segment = APP.segments[index];
                 if (!segment) return;
                 segment.text = text;
+                if (segment.subtitleTypewriter) generateSubtitleBreakpoints(segment);
+                else {
+                    segment.subtitleBreaks = [];
+                    if (index === APP.editingSegmentIndex) renderSubtitleBreakpoints(index);
+                }
                 if (source !== preview) renderEditableScript(preview, text);
                 const small = document.querySelector(`.seg-text[data-i="${index}"]`);
                 if (small && source !== small) small.value = text;
@@ -3212,7 +3790,10 @@
             });
             subtitle.oninput = () => {
                 const index = APP.editingSegmentIndex;
-                if (APP.segments[index]) APP.segments[index].subtitle = subtitle.value;
+                if (APP.segments[index]) {
+                    APP.segments[index].subtitle = subtitle.value;
+                    renderSubtitleBreakpoints(index);
+                }
             };
         }
 
@@ -3877,6 +4458,26 @@
                     } else if (tok.tag === 'zoom') {
                         const raw = (tok.val || '').toLowerCase();
                         APP.fx.zoom = raw === 'off' ? 1 : Math.max(0.1, parseFloat(raw) || 1);
+                    } else if (tok.tag === 'pixelate') {
+                        const parts = (tok.val || '').split(/[:：,，]/).map(value => value.trim().toLowerCase());
+                        const enabled = parts[0] !== 'off' && parts[0] !== '0';
+                        const taggedSize = parts[0] === 'on' ? parts[1] : parts[0];
+                        const parsedSize = Number(taggedSize);
+                        APP.pixelation.enabled = enabled;
+                        if (enabled && Number.isFinite(parsedSize) && parsedSize > 0) {
+                            APP.pixelation.pixelSize = Math.max(1, Math.min(64, Math.round(parsedSize)));
+                        }
+                        const pixelationToggle = document.getElementById('pixelation-enable');
+                        const pixelationSize = document.getElementById('pixelation-size');
+                        if (pixelationToggle) {
+                            pixelationToggle.checked = enabled;
+                            pixelationToggle.dispatchEvent(new Event('change', { bubbles:true }));
+                        }
+                        if (pixelationSize) {
+                            pixelationSize.value = APP.pixelation.pixelSize;
+                            pixelationSize.disabled = !enabled;
+                            pixelationSize.dispatchEvent(new Event('input', { bubbles:true }));
+                        }
                     } else if (tok.tag === 'move') {
                         const p = (tok.val || '').split(/[:：,，]/).map(Number);
                         if (!isNaN(p[0])) APP.motion.offsetX = p[0];
@@ -3987,10 +4588,18 @@
 
                 const isPunct = /[\s。，、！？.!?,，]/.test(tok.char);
                 const dwell = isPunct ? Math.round(phonemeSpeed / ttsRate * 0.5) : Math.round(phonemeSpeed / ttsRate);
-                await csleep(Math.min(dwell, 250));
+                if (APP.subtitle.revealState) {
+                    APP.subtitle.revealState.sourceOffset++;
+                    updateSubtitleReveal();
+                } else if (!/[\s\p{P}]/u.test(tok.char)) {
+                    playTypewriterCharacterSound();
+                }
+                await csleep(dwell);
                 i++;
             }
-            return alive();
+            const completed = alive();
+            if (completed) finishSubtitleReveal();
+            return completed;
         }
 
         // segIdx=undefined 播放全部；指定索引播放单段
@@ -4042,6 +4651,13 @@
             return total / 1000;
         }
         async function playScriptSequence(segIdx, playContinuously = false) {
+            const soundSegments = segIdx === undefined || playContinuously
+                ? APP.segments.slice(segIdx ?? 0)
+                : [APP.segments[segIdx]];
+            if (APP.subtitle.enabled && soundSegments.some(segment => {
+                const sound = getSubtitleSoundSettings(segment);
+                return sound.enabled && sound.volume > 0;
+            })) getTypewriterAudioContext();
             // 问题4：若正在播放，先停止再从头开始
             if (APP.scriptPlaying) {
                 stopScriptSequence();
@@ -4094,7 +4710,7 @@
                     APP.playingSegmentIndex = s;
                     refreshPlaybackButtons();
                     activateSegmentCharacter(s);
-                    setSubtitleText(segSubtitle(s));
+                    prepareSubtitleForSegment(APP.segments[s]);
                     if (segAudio(s)) {
                         // 有配音：播放音频，口型动画同步跑
                         const audioP = playSegAudio(s);
@@ -4112,10 +4728,10 @@
                 APP.playingSegmentIndex = segIdx;
                 refreshPlaybackButtons();
                 activateSegmentCharacter(segIdx);
+                if (txt || segAudio(segIdx)) prepareSubtitleForSegment(APP.segments[segIdx]);
                 if (segAudio(segIdx)) {
                     const audioP = playSegAudio(segIdx);
                     await audioP.started;
-                    setSubtitleText(segSubtitle(segIdx));
                     if (txt) await playOneText(txt, `正在播放第${segIdx + 1}段(配音)...`, true, segLanguage(segIdx));
                     await audioP.done;
                 } else if (txt) {
@@ -4123,7 +4739,6 @@
                     if (useGlobalAudio) {
                         await prepareAndPlayAudio(APP.globalAudio.url, globalAudioOffsetForSegment(segIdx));
                     }
-                    setSubtitleText(segSubtitle(segIdx));
                     await playOneText(txt, `正在播放第${segIdx + 1}段${useGlobalAudio ? '(整体配音定位)' : ''}...`, useGlobalAudio, segLanguage(segIdx));
                 }
             }
@@ -4180,7 +4795,7 @@
         }
         const UI_EN = {
             '口型动画与插图动态 Studio':'Lip Sync & Illustration FX Studio','WebGL v3.0 工程保存+一键导入+扰动XY分离':'WebGL v3.0 · Project files · Quick import · XY distortion',
-            '一键导入(选文件夹)':'Quick Import (Folder)','新建工程':'New Project','清空当前工程并创建一个空白工程':'Create a new blank project','保存工程':'Save Project','读取工程':'Load Project','导出工程文件':'Export Project','导入工程文件':'Import Project',
+            '一键导入(文件夹)':'Quick Import (Folder)','一键导入 PSD':'Quick Import PSD','选择 PSD 文件并按图层名拆分导入':'Choose a PSD file and import layers by name','新建工程':'New Project','清空当前工程并创建一个空白工程':'Create a new blank project','保存工程':'Save Project','读取工程':'Load Project','导出工程文件':'Export Project','导入工程文件':'Import Project',
             '导出 WebM':'Export WebM','导出 MP4':'Export MP4','较小':'Smaller file','标准':'Standard','高画质':'High quality',
             '较小文件':'Smaller file','标准画质':'Standard quality','高画质':'High quality',
             '界面语言':'Interface language','切换界面语言':'Interface language','图层与素材':'Layers & Assets','眨眼与呼吸':'Blink & Breathing',
@@ -4218,6 +4833,36 @@
             '调整编辑器分栏宽度':'Resize editor column','拖动以调整分栏宽度；方向键微调':'Drag to resize column; use arrow keys for fine adjustment',
             '自动生成口型草稿':'Auto-generate lip draft','用本段配音和台词生成可编辑的音素时间草稿':'Generate an editable phoneme-timing draft from this segment’s audio and text'
         };
+        Object.assign(UI_EN, {
+            '像素化': 'Pixelation',
+            '像素步长 (px)': 'Pixel size (px)',
+            '抽帧': 'Frame skip',
+            '每隔 N 帧绘制': 'Render every N frames',
+            '逐字显示': 'Typewriter subtitles',
+            '电子音': 'Electronic tone',
+            '精灵表缩略图': 'Sprite sheet thumbnail',
+            '精灵表缩略图，点击替换': 'Sprite sheet thumbnail; click to replace',
+            '精灵表': 'Sprite Sheet',
+            '行数': 'Rows',
+            '列数': 'Columns',
+            '播放速度（帧/秒）': 'Playback speed (frames/s)',
+            '帧率': 'FPS',
+            '播放次数，-1 为循环': 'Play count; -1 loops',
+            '播放次数': 'Play count',
+            '两次播放的间隔（秒）': 'Interval between plays (seconds)',
+            '间隔(s)': 'Interval (s)',
+            '音色': 'Waveform',
+            '频率': 'Frequency',
+            '像素化开关:步长(px)；仅影响角色画面，不影响字幕。': 'Enable or disable pixelation and set its pixel size; affects characters only, not subtitles.',
+            '正弦': 'Sine',
+            '三角': 'Triangle',
+            '方波': 'Square',
+            '锯齿': 'Sawtooth',
+            '按台词 pause/rate 生成断点': 'Generate breaks from pause/rate',
+            '断点对应台词控制位置；数字表示该处字幕已显示的字数，可按字幕实际文字调整。': 'Each break maps a dialogue control position to a subtitle character count. Adjust it to match your subtitle text.',
+            '字幕由左向右推进；拖动文字下方滑块，将断点对齐到字幕位置。 “第 N 字后”表示该断点前显示 N 个字。': 'Subtitles advance from left to right. Drag each slider beneath the text to align its checkpoint; “after N chars” means N subtitle characters appear before that checkpoint.',
+            '字幕由左向右推进；同一台词位置的 rate/pause 合并为一个断点。拖动共用滑轨上的标记对齐字幕位置。': 'Subtitles advance from left to right. rate/pause tags at the same dialogue position are merged into one checkpoint; drag its marker on the shared slider to align it with the subtitle.'
+        });
         const uiTextSource = new WeakMap();
         const uiTextRendered = new WeakMap();
         const uiAttrSource = new WeakMap();
@@ -4463,7 +5108,10 @@
         // ============ 工程保存 / 读取 ============
         const SAVE_KEY = 'lipSyncFXStudioState_v2';
         function texToDataURL(tex) {
-            return (tex && tex.imgRef && tex.imgRef.src) ? tex.imgRef.src : null;
+            const image = tex && tex.imgRef;
+            if (!image) return null;
+            if (typeof image.src === 'string' && image.src) return image.src;
+            return typeof image.toDataURL === 'function' ? image.toDataURL('image/png') : null;
         }
         function serializeSlot(s) {
             if (!s) return null;
@@ -4479,7 +5127,8 @@
             return {
                 offsetX: settings.offsetX || 0, offsetY: settings.offsetY || 0,
                 scaleX: settings.scaleX || 1, scaleY: settings.scaleY || 1,
-                fxSlots: settings.fxSlots ? { a: serializeSlot(settings.fxSlots.a), b: serializeSlot(settings.fxSlots.b) } : null
+                fxSlots: settings.fxSlots ? { a: serializeSlot(settings.fxSlots.a), b: serializeSlot(settings.fxSlots.b) } : null,
+                spriteAnimation: { ...defaultSpriteAnimationSettings(), ...(settings.spriteAnimation || {}) }
             };
         }
         function buildActiveCharacterState() {
@@ -4487,7 +5136,7 @@
                 version: '3.2',
                 zoom: APP.zoom,
                 // 逐段配音是浏览器内 ObjectURL，无法持久化，保存时只保留文本
-                segments: APP.segments.map(s => ({ text: (s && s.text) || '', subtitle: (s && s.subtitle) || '', audio: null, language: (s && s.language) || 'auto', characterId: (s && s.characterId) || APP.activeCharacterId })),
+                segments: APP.segments.map(s => ({ text: (s && s.text) || '', subtitle: (s && s.subtitle) || '', subtitleTypewriter: !!s?.subtitleTypewriter, subtitleBreaks: Array.isArray(s?.subtitleBreaks) ? s.subtitleBreaks.map(point => ({ ...point })) : [], subtitleSound: s?.subtitleSound ? { ...s.subtitleSound } : null, audio: null, language: (s && s.language) || 'auto', characterId: (s && s.characterId) || APP.activeCharacterId })),
                 blink: APP.blink,
                 breath: APP.breath,
                 mouth: { activeEyeVariant: APP.mouth.activeEyeVariant, activeVariant: APP.mouth.activeVariant },
@@ -4495,11 +5144,14 @@
                 ttsEnable: document.getElementById('tts-enable').checked,
                 language: APP.language,
                 subtitle: {
-                    enabled: APP.subtitle.enabled, size: APP.subtitle.size, x: APP.subtitle.x, y: APP.subtitle.y,
+                    enabled: APP.subtitle.enabled, typewriter: APP.subtitle.typewriter,
+                    typewriterSound: APP.subtitle.typewriterSound, soundWave: APP.subtitle.soundWave, soundFrequency: APP.subtitle.soundFrequency, soundVolume: APP.subtitle.soundVolume,
+                    size: APP.subtitle.size, alignment: APP.subtitle.alignment, x: APP.subtitle.x, y: APP.subtitle.y,
                     color: APP.subtitle.color, stroke: APP.subtitle.stroke
                 },
                 layers: APP.layers.map(l => ({
                     type: l.type, name: l.name, visible: l.visible, fx: l.fx,
+                    imageWrap: !!l.imageWrap,
                     currentTag: l.currentTag,
                     maskable: l.maskable !== false,
                     breathPart: l.breathPart || 0,
@@ -4536,6 +5188,7 @@
             state.projectName = (document.getElementById('project-name')?.value || 'lip-sync-project').trim() || 'lip-sync-project';
             state.activeCharacterId = activeId;
             state.characters = characters;
+            state.pixelation = { ...APP.pixelation };
             return state;
         }
         function buildCharacterPackage() {
@@ -4660,8 +5313,10 @@
                 power:{active:false,type:1,start:0,duration:0.55,blackout:false}
             };
             APP.motion = { offsetX:0, offsetY:0, scroll:{enabled:false,layerId:'',speedX:0.05,speedY:0}, rotate:{enabled:false,layerId:'',speed:30} };
+            APP.pixelation = { enabled:false, pixelSize:4, frameSkipEnabled:false, frameSkipInterval:2 };
+            APP.previewFrameCounter = 0;
             APP.fxGlobal = { speed:1.5, amp:0.03, freqX:12, freqY:12, angle:90, maskChannel:'a', noiseMode:'simplex' };
-            APP.subtitle = { enabled:false, text:'', size:34, x:400, y:720, color:'#ffffff', stroke:'#111827', fontFamily:'sans-serif', canvas:null, texture:null };
+            APP.subtitle = { enabled:false, typewriter:false, typewriterSound:true, soundWave:'sine', soundFrequency:880, soundVolume:35, text:'', size:34, alignment:'center', x:400, y:720, color:'#ffffff', stroke:'#111827', fontFamily:'sans-serif', canvas:null, texture:null };
 
             clearTimeout(globalHistoryTimer);
             globalHistoryPending = null;
@@ -4681,6 +5336,12 @@
             document.getElementById('preview-phoneme').value = 'm';
             document.getElementById('active-phoneme-badge').textContent = 'm';
             document.getElementById('preview-eye').value = 'open';
+            document.getElementById('pixelation-enable').checked = false;
+            document.getElementById('pixelation-size').value = 4;
+            document.getElementById('pixelation-size').disabled = true;
+            document.getElementById('frame-skip-enable').checked = false;
+            document.getElementById('frame-skip-interval').value = 2;
+            document.getElementById('frame-skip-interval').disabled = true;
             document.getElementById('blink-enable').checked = true;
             document.getElementById('blink-speed').value = 60;
             document.getElementById('blink-min').value = 2;
@@ -4701,7 +5362,15 @@
                 else input.value = value;
             }));
             document.getElementById('subtitle-enable').checked = false;
+            document.getElementById('subtitle-typewriter').checked = false;
+            document.getElementById('subtitle-typewriter-sound').checked = true;
+            document.getElementById('subtitle-sound-wave').value = 'sine';
+            document.getElementById('subtitle-sound-frequency').value = 880;
+            document.getElementById('subtitle-sound-frequency-value').textContent = '880 Hz';
+            document.getElementById('subtitle-sound-volume').value = 35;
+            document.getElementById('subtitle-sound-volume-value').textContent = '35%';
             document.getElementById('subtitle-size').value = 34;
+            document.getElementById('subtitle-align').value = 'center';
             document.getElementById('subtitle-x').value = 400;
             document.getElementById('subtitle-y').value = 720;
             document.getElementById('subtitle-color').value = '#ffffff';
@@ -4757,6 +5426,7 @@
             for (const ld of saved.layers) {
                 const layer = {
                     id: ld.name, name: ld.name, type: ld.type,
+                    imageWrap: !!ld.imageWrap,
                     visible: ld.visible !== false, fx: !!ld.fx,
                     maskable: ld.maskable !== false,
                     breathPart: ld.breathPart || 0,
@@ -4768,7 +5438,7 @@
                     fxSlots: makeLayerFxSlots()
                 };
                 if (ld.type === 'static') {
-                    if (ld.texture) layer.texture = await loadTextureFromURL(ld.texture, true);
+                    if (ld.texture) layer.texture = await loadTextureFromURL(ld.texture, true, layer.imageWrap);
                     if (ld.maskTexture) layer.maskTexture = await loadTextureFromURL(ld.maskTexture, false);
                 }
                 if (ld.variants) {
@@ -4777,14 +5447,16 @@
                         layer.variants[k] = {};
                         for (const [fk, url] of Object.entries(frames)) {
                             if (fk === '__settings') continue;
-                            layer.variants[k][fk] = url ? await loadTextureFromURL(url, true) : null;
+                            const wrapImage = layer.imageWrap && !['mask', 'slotAMask', 'slotBMask', 'spriteSheet'].includes(fk);
+                            layer.variants[k][fk] = url ? await loadTextureFromURL(url, true, wrapImage) : null;
                         }
                         const savedSettings = frames.__settings;
                         if (savedSettings) {
                             const settings = {
                                 offsetX: savedSettings.offsetX || 0, offsetY: savedSettings.offsetY || 0,
                                 scaleX: savedSettings.scaleX || 1, scaleY: savedSettings.scaleY || 1,
-                                fxSlots: makeLayerFxSlots()
+                                fxSlots: makeLayerFxSlots(),
+                                spriteAnimation: { ...defaultSpriteAnimationSettings(), ...(savedSettings.spriteAnimation || {}) }
                             };
                             for (const L of ['a', 'b']) {
                                 const sd = savedSettings.fxSlots && savedSettings.fxSlots[L];
@@ -4812,8 +5484,8 @@
             APP.layers = newLayers;
             if (restoreSegments) {
                 APP.segments = (saved.segments || []).map(s => typeof s === 'string'
-                    ? { text: s, subtitle: '', audio: null, language: 'auto', characterId: APP.activeCharacterId }
-                    : { text: s.text || '', subtitle: s.subtitle || '', audio: null, language: s.language || 'auto', characterId: s.characterId || APP.activeCharacterId });
+                    ? { text: s, subtitle: '', subtitleTypewriter: !!saved.subtitle?.typewriter, subtitleBreaks: [], audio: null, language: 'auto', characterId: APP.activeCharacterId }
+                    : { text: s.text || '', subtitle: s.subtitle || '', subtitleTypewriter: typeof s.subtitleTypewriter === 'boolean' ? s.subtitleTypewriter : !!saved.subtitle?.typewriter, subtitleBreaks: Array.isArray(s.subtitleBreaks) ? s.subtitleBreaks.map(point => ({ ...point })) : [], subtitleSound: s.subtitleSound ? { ...s.subtitleSound } : null, audio: null, language: s.language || 'auto', characterId: s.characterId || APP.activeCharacterId });
             }
             APP.framePos = saved.framePos || {};
             syncActiveCharacter();
@@ -4845,6 +5517,17 @@
                 document.getElementById('subtitle-y').value = APP.subtitle.y;
                 document.getElementById('subtitle-color').value = APP.subtitle.color;
                 document.getElementById('subtitle-stroke').value = APP.subtitle.stroke;
+            }
+            if (restoreProjectSettings) {
+                APP.subtitle.alignment = ['left', 'center', 'right'].includes(saved.subtitle?.alignment) ? saved.subtitle.alignment : 'center';
+                document.getElementById('subtitle-align').value = APP.subtitle.alignment;
+                APP.subtitle.typewriter = !!saved.subtitle?.typewriter;
+                APP.subtitle.typewriterSound = saved.subtitle?.typewriterSound !== false;
+                APP.subtitle.soundWave = saved.subtitle?.soundWave || 'sine';
+                APP.subtitle.soundFrequency = Number(saved.subtitle?.soundFrequency) || 880;
+                APP.subtitle.soundVolume = Number(saved.subtitle?.soundVolume) || 35;
+                document.getElementById('subtitle-typewriter').checked = !!APP.segments[APP.editingSegmentIndex]?.subtitleTypewriter;
+                syncSubtitleSoundControls(APP.segments[APP.editingSegmentIndex]);
             }
             if (restoreProjectSettings && saved.zoom != null) {
                 APP.zoom = saved.zoom;
@@ -4885,6 +5568,20 @@
         }
 
         async function restoreState(saved) {
+            const savedPixelation = saved.pixelation || {};
+            APP.pixelation = {
+                enabled: !!savedPixelation.enabled,
+                pixelSize: Math.max(1, Math.min(64, Math.round(Number(savedPixelation.pixelSize) || 4))),
+                frameSkipEnabled: !!savedPixelation.frameSkipEnabled,
+                frameSkipInterval: Math.max(2, Math.min(60, Math.floor(Number(savedPixelation.frameSkipInterval) || 2)))
+            };
+            APP.previewFrameCounter = 0;
+            document.getElementById('pixelation-enable').checked = APP.pixelation.enabled;
+            document.getElementById('pixelation-size').value = APP.pixelation.pixelSize;
+            document.getElementById('pixelation-size').disabled = !APP.pixelation.enabled;
+            document.getElementById('frame-skip-enable').checked = APP.pixelation.frameSkipEnabled;
+            document.getElementById('frame-skip-interval').value = APP.pixelation.frameSkipInterval;
+            document.getElementById('frame-skip-interval').disabled = !APP.pixelation.frameSkipEnabled;
             if (saved.projectName) {
                 const nameInput = document.getElementById('project-name');
                 if (nameInput) nameInput.value = saved.projectName;
@@ -4946,6 +5643,23 @@
                 if (globalHistory.length > 20) { globalHistory.shift(); globalHistoryIndex--; }
                 updateGlobalHistoryButtons();
             } catch (err) { console.warn('撤销历史记录失败', err); }
+        }
+        function commitGlobalHistoryTransaction(before) {
+            clearTimeout(globalHistoryTimer);
+            globalHistoryPending = null;
+            try {
+                const after = captureGlobalHistoryState();
+                if (after.key === before.key) return;
+                if (!globalHistory[globalHistoryIndex] || globalHistory[globalHistoryIndex].key !== before.key) {
+                    globalHistory = globalHistory.slice(0, globalHistoryIndex + 1);
+                    globalHistory.push(before);
+                    globalHistoryIndex = globalHistory.length - 1;
+                }
+                globalHistory = globalHistory.slice(0, globalHistoryIndex + 1);
+                globalHistory.push(after); globalHistoryIndex = globalHistory.length - 1;
+                if (globalHistory.length > 20) { globalHistory.shift(); globalHistoryIndex--; }
+                updateGlobalHistoryButtons();
+            } catch (err) { console.warn('撤销事务记录失败', err); }
         }
         function beginGlobalHistoryCapture(delay = 650) {
             if (globalHistoryBusy) return;
@@ -5040,10 +5754,8 @@
         async function ensureAgPsd() {
             if (window.agPsd) return;
             const cdns = [
-                'https://cdn.jsdelivr.net/npm/ag-psd@14.6.0/dist/bundle.js',
-                'https://unpkg.com/ag-psd@14.6.0/dist/bundle.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/ag-psd/14.6.0/bundle.js',
-                'https://npm.elemecdn.com/ag-psd@14.6.0/dist/bundle.js'
+                'https://cdn.jsdelivr.net/npm/ag-psd@31.0.3/dist/bundle.js',
+                'https://unpkg.com/ag-psd@31.0.3/dist/bundle.js'
             ];
             let lastErr = null;
             for (const src of cdns) {
@@ -5309,48 +6021,111 @@
         }
 
         async function importPSD(file) {
+            if (globalHistoryBusy) return;
             const statusEl = document.getElementById('status-indicator');
             statusEl.innerText = '正在解析 PSD...';
+            let historyBefore = null;
+            globalHistoryBusy = true;
+            updateGlobalHistoryButtons();
             try {
+                historyBefore = globalHistoryPending || captureGlobalHistoryState();
+                clearTimeout(globalHistoryTimer);
+                globalHistoryPending = null;
                 await ensureAgPsd();
                 const buf = await file.arrayBuffer();
-                const psd = window.agPsd.readPsd(buf, { skipCompositeImage: true, skipThumbnail: true });
-                // ag-psd children 从上到下；反转为从下到上绘制
-                const layers = (psd.children || []).filter(c => c.canvas && !c.hidden).reverse();
+                const psd = window.agPsd.readPsd(buf, { skipCompositeImageData: true, skipThumbnail: true });
+                const docWidth = Number(psd.width), docHeight = Number(psd.height);
+                if (!(docWidth > 0 && docHeight > 0)) throw new Error('PSD 画布尺寸无效');
+                const flattenPsdLayers = (nodes, output = [], hiddenByParent = false) => {
+                    for (const node of nodes || []) {
+                        if (!node) continue;
+                        const hidden = hiddenByParent || !!node.hidden;
+                        if (Array.isArray(node.children) && node.children.length) flattenPsdLayers(node.children, output, hidden);
+                        else {
+                            const canvas = hidden
+                                ? (window.agPsd.getLayerCanvas?.(node) || node.canvas)
+                                : (node.canvas || window.agPsd.getLayerCanvas?.(node));
+                            if (canvas) output.push({ layer: node, canvas, hidden });
+                        }
+                    }
+                    return output;
+                };
+                const layers = flattenPsdLayers(psd.children);
 
                 const mouthVariants = {}, eyeVariants = {};
-                const staticGroups = {}; // { prefix(图层名): [{tag, texture}] }
-                const slotMasks = {}; // { 图层全名: { a: tex, b: tex } }
+                const staticGroups = {};
+                const slotMasks = {};
+                let globalMaskTexture = null;
+                const framePos = {};
+                const layerGroupOrder = [];
+                const addGroup = group => {
+                    if (!layerGroupOrder.includes(group)) layerGroupOrder.push(group);
+                };
+                const positionForLayer = (layer, canvas) => {
+                    const left = Number.isFinite(layer.left) ? layer.left : 0;
+                    const top = Number.isFinite(layer.top) ? layer.top : 0;
+                    const width = Math.max(1, Number.isFinite(layer.right) ? layer.right - left : canvas.width);
+                    const height = Math.max(1, Number.isFinite(layer.bottom) ? layer.bottom - top : canvas.height);
+                    return {
+                        scaleX: width / docWidth,
+                        scaleY: height / docHeight,
+                        offsetX: (docWidth / 2 - left - width / 2) / width,
+                        offsetY: (docHeight / 2 - top - height / 2) / height
+                    };
+                };
 
-                for (const child of layers) {
-                    const dataURL = child.canvas.toDataURL('image/png');
+                for (const entry of layers) {
+                    const child = entry.layer;
+                    const canvas = entry.canvas;
+                    const name = String(child.name || '').trim().toLowerCase();
+                    const dataURL = canvas.toDataURL('image/png');
                     // 槽位遮罩：hair1_mask_distortion_slotA / slotB
-                    const sm = String(child.name).trim().match(/^(.+?)_mask_distortion_slot([AB])$/i);
+                    const sm = name.match(/^(.+?)_mask_distortion_slot([ab])$/);
                     if (sm) {
                         const layerName = sm[1];
-                        const letter = sm[2].toLowerCase();
+                        const letter = sm[2];
                         (slotMasks[layerName] = slotMasks[layerName] || {})[letter] = await loadTextureFromURL(dataURL, false);
                         continue;
                     }
-                    const info = parsePsdLayerName(child.name);
+                    if (/^(?:global[\s_-]*mask(?:[\s_-]?\d+)?|mask(?:[\s_-]?\d+)?|全局遮罩|遮罩)$/i.test(name)) {
+                        const maskCanvas = document.createElement('canvas');
+                        maskCanvas.width = docWidth;
+                        maskCanvas.height = docHeight;
+                        const maskContext = maskCanvas.getContext('2d');
+                        if (!maskContext) throw new Error('无法创建全局遮罩画布');
+                        maskContext.drawImage(canvas, Number(child.left) || 0, Number(child.top) || 0);
+                        globalMaskTexture = createTextureFromImage(APP.gl, maskCanvas, false, false);
+                        continue;
+                    }
+                    const info = parsePsdLayerName(name);
                     if (!info) continue;
+                    let attachmentName = '';
                     if (info.prefix === 'mouth') {
-                        (mouthVariants[info.tag] = mouthVariants[info.tag] || {})[info.frame] = await loadTextureFromURL(dataURL, true);
+                        if (!/^[aiueom]$/.test(info.frame)) continue;
+                        (mouthVariants[info.tag] = mouthVariants[info.tag] || {})[info.frame] = await loadTextureFromURL(dataURL, true, true);
+                        attachmentName = `mouth${info.tag}_${info.frame}`;
+                        addGroup('mouth');
                     } else if (info.prefix === 'eye') {
-                        const fr = info.frame === 'close' ? 'closed' : (info.frame || 'open');
-                        (eyeVariants[info.tag] = eyeVariants[info.tag] || {})[fr] = await loadTextureFromURL(dataURL, true);
+                        const frame = info.frame || 'open';
+                        if (!/^(open|half|close|closed)$/.test(frame)) continue;
+                        const fr = frame === 'close' || frame === 'closed' ? 'closed' : frame;
+                        (eyeVariants[info.tag] = eyeVariants[info.tag] || {})[fr] = await loadTextureFromURL(dataURL, true, true);
+                        attachmentName = `eye${info.tag}_${fr === 'closed' ? 'close' : fr}`;
+                        addGroup('eyes');
                     } else {
-                        // face / brow / hair / 其它：按前缀（图层名）分组，数字为差分 tag
                         (staticGroups[info.prefix] = staticGroups[info.prefix] || []).push({
                             tag: info.tag,
-                            texture: await loadTextureFromURL(dataURL, true)
+                            texture: await loadTextureFromURL(dataURL, true, true)
                         });
+                        attachmentName = `${info.prefix}${info.tag}`;
+                        addGroup(info.prefix);
                     }
+                    framePos[attachmentName] = positionForLayer(child, canvas);
                 }
 
-                // 组装新图层栈（保持 PSD 顺序）
-                const newLayers = [];
-                for (const [prefix, items] of Object.entries(staticGroups)) {
+                const makeStatic = prefix => {
+                    const items = staticGroups[prefix];
+                    if (!items?.length) return null;
                     const variants = {};
                     for (const it of items) {
                         variants[it.tag] = {
@@ -5360,35 +6135,53 @@
                             slotBMask: slotMasks[`${prefix}${it.tag}`]?.b || null
                         };
                     }
-                    const layerDef = {
+                    return {
                         id: prefix, name: prefix, type: 'static', visible: true, fx: true,
+                        imageWrap: true,
                         currentTag: items[0].tag,
                         offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1,
                         texture: items[0].texture, maskTexture: null, variants, fxSlots: makeLayerFxSlots()
                     };
-                    newLayers.push(layerDef);
-                }
-                if (Object.keys(mouthVariants).length) {
-                    newLayers.push({ id: 'mouth', name: '嘴巴 (6种口型)', type: 'mouth', visible: true, fx: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, texture: null, maskTexture: null, variants: mouthVariants, fxSlots: makeLayerFxSlots() });
-                }
-                if (Object.keys(eyeVariants).length) {
-                    newLayers.push({ id: 'eyes', name: '眼睛 (3帧)', type: 'eyes', visible: true, fx: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, texture: null, maskTexture: null, variants: eyeVariants, fxSlots: makeLayerFxSlots() });
-                }
-                if (!newLayers.length) {
+                };
+                const makeMouth = () => Object.keys(mouthVariants).length
+                    ? { id: 'mouth', name: 'mouth', type: 'mouth', imageWrap: true, visible: true, fx: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, texture: null, maskTexture: null, variants: mouthVariants, fxSlots: makeLayerFxSlots() }
+                    : null;
+                const makeEyes = () => Object.keys(eyeVariants).length
+                    ? { id: 'eyes', name: 'eye', type: 'eyes', imageWrap: true, visible: true, fx: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1, texture: null, maskTexture: null, variants: eyeVariants, fxSlots: makeLayerFxSlots() }
+                    : null;
+                const builders = { mouth: makeMouth, eyes: makeEyes };
+                const newLayers = layerGroupOrder.map(group => builders[group] ? builders[group]() : makeStatic(group)).filter(Boolean);
+                if (!newLayers.length && !globalMaskTexture) {
                     alert('PSD 中未识别到符合 mouth5_a / eye4_open / face1 命名规则的图层。');
                     return;
                 }
                 APP.layers = newLayers;
+                APP.framePos = framePos;
+                APP.globalMask.tex = globalMaskTexture;
+                APP.globalMask.enabled = !!globalMaskTexture;
+                APP.globalMask.offsetX = 0;
+                APP.globalMask.offsetY = 0;
+                APP.globalMask.scaleX = 1;
+                APP.globalMask.scaleY = 1;
+                document.getElementById('global-mask-enable').checked = APP.globalMask.enabled;
+                [['gm-ox', 0], ['gm-oy', 0], ['gm-sx', 1], ['gm-sy', 1], ['gm-ox-num', 0], ['gm-oy-num', 0], ['gm-sx-num', 1], ['gm-sy-num', 1]]
+                    .forEach(([id, value]) => { const input = document.getElementById(id); if (input) input.value = value; });
                 syncActiveCharacter();
                 const mouthKeys = Object.keys(mouthVariants), eyeKeys = Object.keys(eyeVariants);
                 APP.mouth.activeVariant = mouthKeys[0] || 'normal';
                 APP.mouth.activeEyeVariant = eyeKeys[0] || 'normal';
                 renderLayersUI();
                 refreshVariantSelectors();
-                statusEl.innerText = `PSD 导入完成：${newLayers.length} 个图层`;
+                statusEl.innerText = `PSD 导入完成：${newLayers.length} 个图层，${Object.keys(framePos).length} 个附件定位${globalMaskTexture ? '，已导入全局遮罩' : ''}`;
+                commitGlobalHistoryTransaction(historyBefore);
             } catch (e) {
                 console.error(e);
                 alert('PSD 导入失败：' + e.message);
+            } finally {
+                clearTimeout(globalHistoryTimer);
+                globalHistoryPending = null;
+                globalHistoryBusy = false;
+                updateGlobalHistoryButtons();
             }
         }
 
@@ -5603,6 +6396,7 @@
             line:{'fx-line-on':false,'fx-line-color':'#ffffff','fx-fill-color':'#000000'},
             ca:{'fx-ca-on':false,'fx-ca-amount':0.003},
             glitch:{'fx-glitch-on':false,'fx-glitch-type':0,'fx-glitch-amount':0.02,'fx-glitch-speed':8},
+            pixelate:{'pixelation-enable':false,'pixelation-size':4},
             fisheye:{'fx-fisheye':0}, screen:{'fx-screen':0}, blur:{'fx-blur':0}, temperature:{'fx-temp':0},
             snow:{'fx-snow':0}, invert:{'fx-invert':0}, boot:{'fx-power-duration':550}, shutdown:{'fx-shutdown-duration':550},
             zoom:{'fx-zoom':1,'fx-zoom-value':1}, move:{'motion-offset-x':0,'motion-offset-y':0},
@@ -5652,6 +6446,9 @@
                         const types = ['scan', 'slice', 'rgb'];
                         return enabled('fx-glitch-on') ? `[glitch:${types[parseInt(value('fx-glitch-type'), 10)] || 'scan'}:${n('fx-glitch-amount')}:${n('fx-glitch-speed')}]` : '[glitch:off]';
                     }
+                    case 'pixelate': return enabled('pixelation-enable')
+                        ? `[pixelate:on:${Math.max(1, Math.min(64, Math.round(parseFloat(value('pixelation-size')) || 4)))}]`
+                        : '[pixelate:off]';
                     case 'fisheye': return scalar('fisheye', 'fx-fisheye');
                     case 'screen': return scalar('screen', 'fx-screen');
                     case 'blur': return scalar('blur', 'fx-blur');
@@ -5701,7 +6498,7 @@
                 details.append(summary, content);
                 group.replaceWith(details);
             });
-            const effectTags = new Set(['flash','hue','crt','line','ca','glitch','fisheye','screen','blur','temp','snow','invert','boot','shutdown','zoom','move','shake']);
+            const effectTags = new Set(['flash','hue','crt','line','ca','glitch','pixelate','fisheye','screen','blur','temp','snow','invert','boot','shutdown','zoom','move','shake']);
             document.querySelectorAll('.qs-btn[data-insert], .qs-btn[data-motion-insert]').forEach(button => {
                 const tagName = button.dataset.insert?.match(/^\[([a-z]+)/i)?.[1]?.toLowerCase();
                 if (button.dataset.motionInsert || effectTags.has(tagName)) button.remove();
@@ -5733,7 +6530,7 @@
             document.getElementById('new-project-btn').addEventListener('click', createNewProject);
             const languageSelect = document.getElementById('ui-language');
             languageSelect.value = localStorage.getItem('lipSyncFXStudioUiLanguage') === 'en' ? 'en' : 'zh';
-            languageSelect.addEventListener('change', e => { setUiLanguage(e.target.value); renderBreathParts(); refreshPlaybackButtons(); window.refreshTransformTargets?.(); window.updateTransformOverlay?.(); });
+            languageSelect.addEventListener('change', e => { setUiLanguage(e.target.value); renderBreathParts(); renderSubtitleBreakpoints(); refreshPlaybackButtons(); window.refreshTransformTargets?.(); window.updateTransformOverlay?.(); });
             setUiLanguage(languageSelect.value);
             renderBreathParts();
             let languageRefreshTimer;
@@ -5780,6 +6577,7 @@
                     globalMask: { tex: null, enabled: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }
                 });
                 activateCharacter(id);
+                renderLoop(performance.now(), false);
                 document.getElementById('status-indicator').innerText = '已新增空白角色；导入素材将只写入当前角色';
             });
             document.getElementById('export-character-btn').addEventListener('click', async () => {
@@ -5821,6 +6619,7 @@
                 };
                 APP.characters.push(duplicate);
                 activateCharacter(id);
+                renderLoop(performance.now(), false);
                 document.getElementById('status-indicator').innerText = `已复制角色：${duplicate.name}`;
             });
             document.getElementById('rename-character-btn').addEventListener('click', () => {
@@ -5842,6 +6641,7 @@
                     if (segment?.characterId === c.id) segment.characterId = fallbackId;
                 });
                 activateCharacter(fallbackId);
+                renderLoop(performance.now(), false);
             });
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -5853,7 +6653,17 @@
                 });
             });
 
-            document.getElementById('blink-enable').addEventListener('change', e => APP.blink.enabled = e.target.checked);
+            document.getElementById('blink-enable').addEventListener('change', e => {
+                APP.blink.sequence = null;
+                APP.blink.enabled = e.target.checked;
+                if (APP.blink.enabled) {
+                    APP.blink.frame = 'open';
+                    APP.blink.timer = 0;
+                    document.getElementById('preview-eye').value = 'auto';
+                } else {
+                    document.getElementById('preview-eye').value = APP.blink.frame;
+                }
+            });
             document.getElementById('blink-speed').addEventListener('input', e => APP.blink.speed = parseFloat(e.target.value));
             document.getElementById('blink-min').addEventListener('input', e => APP.blink.minInterval = parseFloat(e.target.value) * 1000);
             document.getElementById('blink-max').addEventListener('input', e => APP.blink.maxInterval = parseFloat(e.target.value) * 1000);
@@ -5924,7 +6734,41 @@
                 });
             };
             document.getElementById('subtitle-enable').addEventListener('change', e => APP.subtitle.enabled = e.target.checked);
+            document.getElementById('subtitle-typewriter').addEventListener('change', e => {
+                const segment = APP.segments[APP.editingSegmentIndex];
+                if (!segment) return;
+                segment.subtitleTypewriter = e.target.checked;
+                APP.subtitle.typewriter = e.target.checked;
+                if (e.target.checked) generateSubtitleBreakpoints(segment);
+            });
+            const updateSegmentSound = (key, value) => {
+                const segment = APP.segments[APP.editingSegmentIndex];
+                if (!segment) return;
+                const settings = getSubtitleSoundSettings(segment);
+                settings[key] = value;
+                if (APP.subtitle.activeSoundSettings) APP.subtitle.activeSoundSettings = settings;
+            };
+            document.getElementById('subtitle-typewriter-sound').addEventListener('change', e => {
+                updateSegmentSound('enabled', e.target.checked);
+                if (e.target.checked) getTypewriterAudioContext();
+            });
+            document.getElementById('subtitle-sound-wave').addEventListener('change', e => updateSegmentSound('wave', e.target.value));
+            document.getElementById('subtitle-sound-frequency').addEventListener('input', e => {
+                const frequency = Number(e.target.value) || 880;
+                updateSegmentSound('frequency', frequency);
+                document.getElementById('subtitle-sound-frequency-value').textContent = `${frequency} Hz`;
+            });
+            document.getElementById('subtitle-sound-volume').addEventListener('input', e => {
+                const volume = Number(e.target.value) || 0;
+                updateSegmentSound('volume', volume);
+                document.getElementById('subtitle-sound-volume-value').textContent = `${volume}%`;
+            });
+            document.getElementById('subtitle-generate-breaks').addEventListener('click', () => {
+                const segment = APP.segments[APP.editingSegmentIndex];
+                if (segment) generateSubtitleBreakpoints(segment);
+            });
             subtitleBind('subtitle-size', 'size', true);
+            document.getElementById('subtitle-align').addEventListener('change', e => APP.subtitle.alignment = e.target.value);
             subtitleBind('subtitle-x', 'x', true);
             subtitleBind('subtitle-y', 'y', true);
             subtitleBind('subtitle-color', 'color');
@@ -5991,9 +6835,10 @@
                     alert('请先将光标放在台词中间的拆分位置。');
                     return;
                 }
-                const first = { ...segment, text: text.slice(0, at) };
+                const first = { ...segment, text: text.slice(0, at), subtitleBreaks: [], subtitleSound: { ...getSubtitleSoundSettings(segment) } };
                 const second = {
-                    ...segment, text: text.slice(at), subtitle: '', audio: null,
+                    ...segment, text: text.slice(at), subtitle: '', subtitleBreaks: [], audio: null,
+                    subtitleSound: { ...getSubtitleSoundSettings(segment) },
                     collapsed: false
                 };
                 APP.segments.splice(index, 1, first, second);
@@ -6023,7 +6868,7 @@
             });
             // 添加新段落
             const addSegment = () => {
-                APP.segments.push({ text: '', audio: null, language: 'auto', characterId: APP.activeCharacterId });
+                APP.segments.push({ text: '', subtitle: '', subtitleTypewriter: false, subtitleBreaks: [], subtitleSound: defaultSubtitleSoundSettings(), audio: null, language: 'auto', characterId: APP.activeCharacterId });
                 renderSegmentList();
                 selectSegmentForEditor(APP.segments.length - 1);
                 const editor = document.getElementById('dock-tag-preview');
@@ -6096,6 +6941,12 @@
             document.getElementById('import-spine-btn').addEventListener('click', () => document.getElementById('spine-upload').click());
             document.getElementById('spine-upload').addEventListener('change', (e) => {
                 if (e.target.files.length) importSpineSet(e.target.files);
+                e.target.value = '';
+            });
+            document.getElementById('import-psd-btn').addEventListener('click', () => document.getElementById('psd-upload').click());
+            document.getElementById('psd-upload').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) await importPSD(file);
                 e.target.value = '';
             });
 
@@ -6371,6 +7222,32 @@
                 applyStageTransform();
                 document.getElementById('zoom-val').innerText = '100%';
             });
+            const pixelationEnable = document.getElementById('pixelation-enable');
+            const pixelationSize = document.getElementById('pixelation-size');
+            const frameSkipEnable = document.getElementById('frame-skip-enable');
+            const frameSkipInterval = document.getElementById('frame-skip-interval');
+            pixelationEnable.addEventListener('change', e => {
+                APP.pixelation.enabled = e.target.checked;
+                pixelationSize.disabled = !e.target.checked;
+            });
+            const updatePixelationSize = e => {
+                const value = Number(e.target.value);
+                if (!Number.isFinite(value) || value <= 0) return;
+                APP.pixelation.pixelSize = Math.max(1, Math.min(64, Math.round(value)));
+                e.target.value = APP.pixelation.pixelSize;
+            };
+            pixelationSize.addEventListener('input', updatePixelationSize);
+            pixelationSize.addEventListener('change', updatePixelationSize);
+            frameSkipEnable.addEventListener('change', e => {
+                APP.pixelation.frameSkipEnabled = e.target.checked;
+                frameSkipInterval.disabled = !e.target.checked;
+                APP.previewFrameCounter = 0;
+            });
+            frameSkipInterval.addEventListener('change', e => {
+                APP.pixelation.frameSkipInterval = Math.max(2, Math.min(60, Math.floor(Number(e.target.value) || 2)));
+                e.target.value = APP.pixelation.frameSkipInterval;
+                APP.previewFrameCounter = 0;
+            });
 
             // 鼠标滚轮缩放 + 按住中键拖动平移
             const stage = document.querySelector('.canvas-container');
@@ -6411,12 +7288,18 @@
                 document.getElementById('active-phoneme-badge').innerText = e.target.value;
             });
             document.getElementById('preview-eye').addEventListener('change', (e) => {
-                APP.blink.frame = e.target.value;
-                // 手动选帧时临时暂停自动眨眼，避免被引擎覆盖
-                if (APP.blink.enabled) {
-                    APP.blink.enabled = false;
-                    document.getElementById('blink-enable').checked = false;
+                if (e.target.value === 'auto') {
+                    APP.blink.sequence = null;
+                    APP.blink.enabled = true;
+                    APP.blink.frame = 'open';
+                    APP.blink.timer = 0;
+                    document.getElementById('blink-enable').checked = true;
+                    return;
                 }
+                APP.blink.sequence = null;
+                APP.blink.enabled = false;
+                APP.blink.frame = e.target.value;
+                document.getElementById('blink-enable').checked = false;
             });
             const insertPreviewVariantsButton = document.getElementById('insert-preview-variants');
             insertPreviewVariantsButton.addEventListener('mousedown', e => e.preventDefault());
@@ -6440,7 +7323,7 @@
 
             // 初始台词（在分段编辑器中可直接编辑/增删/排序）
             APP.segments = [
-                { text: '[rate:100]\nお、[pause:500]\nおはよう', audio: null, language: 'ja-JP', characterId: APP.activeCharacterId }
+                { text: '[rate:100]\nお、[pause:500]\nおはよう', subtitleTypewriter: false, audio: null, language: 'ja-JP', characterId: APP.activeCharacterId }
             ];
             renderSegmentList();
             updateSegmentEditorBindings();
