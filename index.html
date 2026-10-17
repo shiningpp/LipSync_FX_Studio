@@ -141,7 +141,6 @@
             <button id="new-project-btn" class="text-[11px] px-2 py-1.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-700 rounded text-emerald-100 whitespace-nowrap" title="清空当前工程并创建一个空白工程">
                 <i class="fa-solid fa-file-circle-plus mr-1"></i>新建工程
             </button>
-            <span class="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">WebGL v3.0 工程保存+一键导入+扰动XY分离</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -149,14 +148,6 @@
             <select id="ui-language" class="bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200" title="切换界面语言">
                 <option value="zh">中文</option><option value="en">English</option>
             </select>
-            <input type="file" id="spine-upload" webkitdirectory directory multiple class="hidden">
-            <button id="import-spine-btn" class="text-xs px-3 py-1.5 bg-amber-900 hover:bg-amber-800 border border-amber-700 rounded text-amber-200 transition flex items-center gap-1.5" title="一键导入：选择导出文件夹，自动读取其中的位置JSON和全部PNG图片">
-                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> 一键导入(选文件夹)
-            </button>
-            <input type="file" id="psd-upload" accept=".psd" class="hidden">
-            <button id="import-psd-btn" class="text-xs px-3 py-1.5 bg-sky-900 hover:bg-sky-800 border border-sky-700 rounded text-sky-200 transition flex items-center gap-1.5" title="选择 PSD 文件并按图层名拆分导入">
-                <i class="fa-solid fa-file-image text-sky-300"></i> 一键导入 PSD
-            </button>
             <div class="h-4 w-[1px] bg-zinc-800"></div>
             <input id="project-name" value="lip-sync-project" maxlength="60" title="工程名称（用于保存与导出文件名）" class="w-32 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200" placeholder="工程名称">
             <button id="global-undo-btn" class="text-xs px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300" title="撤销 (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i> 撤销</button>
@@ -203,11 +194,20 @@
 
                 <!-- 1. LAYERS & UPLOADS TAB -->
                 <div id="tab-layers" class="space-y-3">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">图层结构与独立的蒙版/贴图</span>
-                        <button id="add-layer-btn" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-blue-400 border border-zinc-700 text-[11px] flex items-center gap-1">
+                    <div class="flex flex-col gap-2 mb-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <input type="file" id="spine-upload" webkitdirectory directory multiple class="hidden">
+                            <button id="import-spine-btn" class="text-[10px] px-2 py-1 bg-amber-900 hover:bg-amber-800 border border-amber-700 rounded text-amber-200 transition flex items-center gap-1.5 whitespace-nowrap" title="一键导入：选择导出文件夹，自动读取其中的位置JSON和全部PNG图片">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> 一键导入(选文件夹)
+                            </button>
+                            <input type="file" id="psd-upload" accept=".psd" class="hidden">
+                            <button id="import-psd-btn" class="text-[10px] px-2 py-1 bg-sky-900 hover:bg-sky-800 border border-sky-700 rounded text-sky-200 transition flex items-center gap-1.5 whitespace-nowrap" title="选择 PSD 文件并按图层名拆分导入">
+                                <i class="fa-solid fa-file-image text-sky-300"></i> 一键导入 PSD
+                            </button>
+                            <button id="add-layer-btn" class="ml-auto px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-blue-400 border border-zinc-700 text-[11px] flex items-center gap-1 whitespace-nowrap">
                             <i class="fa-solid fa-plus"></i> 新增图层
-                        </button>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 全局遮罩控制面板 -->
@@ -332,16 +332,16 @@
         <section class="flex-1 bg-zinc-950 flex flex-col relative overflow-hidden">
             <!-- Viewport Overlay Toolbar -->
             <div class="absolute top-3 bottom-11 left-3 right-3 flex justify-between items-start z-10 pointer-events-none min-h-0">
-                <div class="bg-zinc-900/90 backdrop-blur-md p-2 rounded-lg border border-zinc-800 text-xs flex flex-col gap-2 pointer-events-auto w-72 max-w-[calc(100vw-1.5rem)] min-h-0 max-h-full overflow-y-auto overscroll-contain">
-                    <div class="flex flex-wrap items-center gap-1.5 pb-2 border-b border-zinc-800">
-                        <span class="text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-gamepad text-blue-400"></i> 预览口型</span>
-                        <span id="active-phoneme-badge" class="font-mono text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 rounded font-bold">m</span>
-                        <select id="preview-phoneme" class="bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200 text-[11px]">
+                <div class="bg-zinc-900/90 backdrop-blur-md p-2 rounded-lg border border-zinc-800 text-xs flex flex-col gap-2 pointer-events-auto w-[19rem] max-w-[calc(100vw-1.5rem)] min-h-0 max-h-full overflow-y-auto overscroll-contain">
+                    <div class="flex flex-nowrap items-center gap-1.5 pb-2 border-b border-zinc-800 whitespace-nowrap">
+                        <span class="shrink-0 text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-gamepad text-blue-400"></i> 预览口型</span>
+                        <span id="active-phoneme-badge" class="shrink-0 font-mono text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 rounded font-bold">m</span>
+                        <select id="preview-phoneme" class="shrink-0 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200 text-[11px]">
                             <option value="a">あ a</option><option value="i">い i</option><option value="u">う u</option>
                             <option value="e">え e</option><option value="o">お o</option><option value="m" selected>闭 m</option>
                         </select>
-                        <span class="text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-eye text-purple-400"></i> 眼睛</span>
-                        <select id="preview-eye" class="bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200 text-[11px]">
+                        <span class="shrink-0 text-zinc-400 flex items-center gap-1"><i class="fa-solid fa-eye text-purple-400"></i> 眼睛</span>
+                        <select id="preview-eye" class="shrink-0 bg-zinc-900 border border-zinc-700 rounded px-1 py-0.5 text-zinc-200 text-[11px]">
                             <option value="auto">自动眨眼</option><option value="open">全开</option><option value="half">半开</option><option value="closed">闭上</option>
                         </select>
                     </div>
@@ -432,7 +432,7 @@
         </section>
 
         <!-- RIGHT PANEL: Dialogue Script Sequencer -->
-        <aside id="right-panel" class="w-[520px] border-l border-zinc-800 bg-zinc-900 flex flex-col z-10">
+        <aside id="right-panel" class="hidden w-[520px] border-l border-zinc-800 bg-zinc-900 flex flex-col z-10">
             <div class="p-3 border-b border-zinc-800 flex justify-between items-center">
                 <span class="font-bold text-xs uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-comment-dots text-blue-400"></i> 台词与口型对齐序列
@@ -505,36 +505,16 @@
                     </div>
                 </div>
 
-                <!-- Audio File & TTS Options -->
+                <!-- Audio File Options -->
                 <div class="space-y-2 bg-zinc-950 p-3 rounded border border-zinc-800">
                     <div class="flex items-center justify-between">
-                        <label class="text-[10px] text-zinc-400 font-semibold">配音音频 (可选附件)</label>
+                        <label class="text-[10px] text-zinc-400 font-semibold">整体配音</label>
                         <input type="file" id="audio-upload" accept="audio/*" class="hidden">
                         <button id="upload-audio-btn" class="px-2 py-1 bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 rounded text-[11px] text-zinc-300 flex items-center gap-1">
-                            <i class="fa-solid fa-paperclip"></i> <span id="audio-file-label">绑定音频文件</span>
+                            <i class="fa-solid fa-paperclip"></i> <span id="audio-file-label">整体配音</span>
                         </button>
                     </div>
 
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-[10px] text-zinc-400">开启语音合成 (TTS，口型跟随语速)</span>
-                        <input type="checkbox" id="tts-enable" class="accent-blue-500 rounded cursor-pointer">
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <label for="script-language" class="text-[10px] text-zinc-400">默认台词语言（影响自动口型）</label>
-                        <select id="script-language" class="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-200">
-                            <option value="auto">自动识别</option>
-                            <option value="zh-CN">中文</option>
-                            <option value="ja-JP">日语</option>
-                            <option value="en-US">英语</option>
-                        </select>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[10px] text-zinc-400 mb-1">
-                            <span>TTS 语速倍率（口型速度同步跟随）</span>
-                            <span id="val-tts-rate">1.00x</span>
-                        </div>
-                        <input type="range" id="tts-rate" min="0.5" max="2" step="0.05" value="1.0" class="w-full accent-blue-500">
-                    </div>
                     <div class="flex items-center justify-between pt-1">
                         <span class="text-[10px] text-zinc-400">导出时包含配音音频（需先绑定音频文件）</span>
                         <input type="checkbox" id="export-with-audio" class="accent-blue-500 rounded cursor-pointer">
@@ -552,18 +532,17 @@
         <div class="grid gap-3 flex-1 min-h-0 min-w-0">
             <div class="flex flex-col min-h-0">
                 <div class="h-7 min-h-[28px] shrink-0 flex items-center justify-between mb-1">
-                    <label class="text-[11px] font-semibold text-cyan-300">段落选择</label>
+                    <label class="text-[11px] font-semibold text-cyan-300">段落</label>
                     <button id="dock-add-segment" class="px-2 py-1 bg-cyan-800 hover:bg-cyan-700 rounded text-[10px] text-white"><i class="fa-solid fa-plus mr-1"></i>添加</button>
                 </div>
-                    <label for="play-from-segment" class="text-[10px] text-zinc-400">连续预览起始段</label>
-                    <select id="play-from-segment" class="w-full min-w-0 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-[11px] text-zinc-200"></select>
+                    <select id="play-from-segment" aria-label="连续预览起始段" class="w-full min-w-0 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-[11px] text-zinc-200"></select>
                     <button id="btn-play-script" class="w-full min-w-0 mb-2 px-2 py-1 bg-blue-600 hover:bg-blue-500 font-medium rounded text-white text-[10px] transition flex items-center justify-center gap-1"><i class="fa-solid fa-play"></i>连续播放</button>
                 <div id="segment-list" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0">
                     <!-- segment cards inject here -->
                 </div>
             </div>
             <div id="dock-tools" class="min-h-0 overflow-y-auto">
-                <div class="h-7 min-h-[28px] shrink-0 flex items-center mb-1 text-[11px] font-semibold text-zinc-300"><i class="fa-solid fa-sliders mr-1 text-blue-400"></i>配音</div>
+                <label class="text-[11px] font-semibold text-blue-300">配音</label>
                 <!-- 配音相关控件会在初始化时移至此处 -->
             </div>
             <div class="flex flex-col min-h-0">
@@ -581,7 +560,6 @@
                 <div class="h-7 min-h-[28px] shrink-0 flex items-center mb-1">
                     <label for="dock-subtitle-text" class="text-[11px] font-semibold text-amber-300">画面字幕</label>
                 </div>
-                <div class="text-[10px] text-zinc-500 mb-1">不包含控制语句；留空则不显示字幕</div>
                 <details class="bg-zinc-950/80 p-2 rounded border border-zinc-800 text-[10px] mb-2">
                     <summary class="cursor-pointer text-zinc-300 font-semibold"><i class="fa-solid fa-closed-captioning text-amber-400 mr-1"></i>字幕显示与字体设置</summary>
                     <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 mt-2">
@@ -764,7 +742,6 @@
             scriptPlaying: false,
             segments: [],
             language: 'auto',
-            speechSynth: window.speechSynthesis || null,
             audioElement: new Audio(),
             globalAudio: null,
             subtitle: {
@@ -839,13 +816,6 @@
                 document.head.appendChild(script);
             });
             return pinyinProLoadPromise;
-        }
-        function inferSpeechLanguage(text, selectedLanguage) {
-            if (selectedLanguage && selectedLanguage !== 'auto') return selectedLanguage;
-            if (/[ぁ-んァ-ヶ]/.test(text)) return 'ja-JP';
-            if (/[\u3400-\u9fff]/.test(text)) return 'zh-CN';
-            if (/[a-z]/i.test(text)) return 'en-US';
-            return navigator.language || 'zh-CN';
         }
         function pinyinToMouth(pinyin) {
             const s = String(pinyin || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f0-9]/g, '').replace('ü', 'v');
@@ -3188,7 +3158,7 @@
             if (scheduleNext) requestAnimationFrame(renderLoop);
         }
 
-        // ============ 台词解析与播放引擎（分段 / TTS同步 / Tag切换） ============
+        // ============ 台词解析与播放引擎（分段 / Tag切换） ============
         // 按空行把台词拆成若干段
         function splitSegments(text) {
             return text.split(/\n\s*\n+/).map(s => s.trim()).filter(s => s.length > 0);
@@ -3948,7 +3918,6 @@
                 const pauseByOffset = new Map();
                 for (const pause of pauses) pauseByOffset.set(pause.offset, Math.max(pauseByOffset.get(pause.offset) || 0, pause.ms));
                 const cuts = [...pauseByOffset.keys()].filter(offset => offset > 0 && offset < chars.length).sort((a, b) => a - b);
-                const ttsRate = parseFloat(document.getElementById('tts-rate')?.value) || 1;
                 const tagsAtOffset = new Map();
                 const addTag = (offset, tag) => {
                     if (!tagsAtOffset.has(offset)) tagsAtOffset.set(offset, []);
@@ -3975,7 +3944,7 @@
                         return sum + phrase.durationMs * overlap / mappedChars;
                     }, 0);
                     const phraseRate = phraseWeight > 0
-                        ? Math.max(25, Math.min(500, Math.round(phraseDuration / phraseWeight * ttsRate)))
+                        ? Math.max(25, Math.min(500, Math.round(phraseDuration / phraseWeight)))
                         : 200;
                     addTag(charStart, `[rate:${phraseRate}]`);
                     charStart = charEnd;
@@ -4039,12 +4008,11 @@
                     compact.push(event);
                 }
                 if (!compact.length) throw new Error('没有识别到可用的音素口型，请检查台词和配音是否一致。');
-                const ttsRate = parseFloat(document.getElementById('tts-rate')?.value) || 1;
                 const gaps = compact.slice(1).map((event, i) => (event.at - compact[i].at) * 1000).filter(ms => ms > 0);
                 // [rate:] 只负责口型序列的播放速度；剩余时间用 [pause:] 等待到下一个识别时间点。
                 const shortestGapMs = gaps.reduce((min, gap) => Math.min(min, gap), Infinity);
                 const mouthStepMs = Math.max(20, Math.min(80, Number.isFinite(shortestGapMs) ? shortestGapMs : 80));
-                const rateValue = Math.max(1, Math.round(mouthStepMs * ttsRate));
+                const rateValue = Math.max(1, Math.round(mouthStepMs));
                 const tags = [`[rate:${rateValue}]`];
                 if (compact[0].at > 0.04) {
                     tags.push('[lip:m]');
@@ -4053,14 +4021,14 @@
                 }
                 compact.forEach((event, eventIndex) => {
                     if (eventIndex === compact.length - 1) {
-                        tags.push(`[rate:${Math.max(1, Math.round(200 * ttsRate))}]`);
+                        tags.push('[rate:200]');
                     }
                     tags.push(`[lip:${event.viseme}]`);
                     const next = compact[eventIndex + 1];
                     if (next) {
                         let pauseMs = Math.round((next.at - event.at) * 1000 - mouthStepMs);
                         if (pauseMs >= 400) {
-                            tags.push(`[rate:${Math.max(1, Math.round(100 * ttsRate))}]`);
+                            tags.push('[rate:100]');
                             tags.push('[lip:m]');
                             tags.push(`[rate:${rateValue}]`);
                             pauseMs -= 100;
@@ -4155,7 +4123,7 @@
                 card.innerHTML = `
                     <div class="flex flex-wrap items-center gap-1.5">
                         <span class="text-[10px] text-blue-300 font-bold shrink-0">段${i + 1}</span>
-                        <select class="seg-language bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-[10px] text-zinc-300" title="本段口型及 TTS 语言">
+                        <select class="seg-language bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-[10px] text-zinc-300" title="本段口型语言">
                             <option value="auto" ${(seg.language || 'auto') === 'auto' ? 'selected' : ''}>默认语言</option>
                             <option value="zh-CN" ${seg.language === 'zh-CN' ? 'selected' : ''}>中文</option>
                             <option value="ja-JP" ${seg.language === 'ja-JP' ? 'selected' : ''}>日语</option>
@@ -4249,8 +4217,8 @@
             ta.selectionStart = ta.selectionEnd = s + tag.length;
         };
 
-        // 播放单个文本段（TTS + 口型同步），返回是否播放完成；noTTS=true 时只跑口型动画不语音合成
-        async function playOneText(text, label, noTTS, language = APP.language) {
+        // 播放单个文本段并驱动口型，返回是否播放完成。
+        async function playOneText(text, label, language = APP.language) {
             const myId = APP.playId;
             const alive = () => APP.scriptPlaying && APP.playId === myId;
             const statusEl = document.getElementById('status-indicator');
@@ -4258,7 +4226,6 @@
 
             let phonemeSpeed = 200; // ms/字（自然语速基准，[rate:] 可覆盖）
             let manualLipMode = false; // [lip:] 进入手动口型；[auto] 恢复自动
-            const ttsRate = parseFloat(document.getElementById('tts-rate').value) || 1.0;
             const tokens = parseTokens(text);
 
             // 日文假名 -> 元音口型表（按行归元音：あ行=a/i/u/e/o，加上浊音/半浊音与片假名）
@@ -4313,36 +4280,6 @@
                 badge.innerText = `${p.toUpperCase()} (${p === 'm' ? '闭嘴/闭合' : '张嘴'})`;
             };
 
-            // TTS：用 boundary 事件让口型等待语音实际发音位置
-            let boundaryTarget = -1;
-            let ttsActive = false;
-            if (!noTTS && document.getElementById('tts-enable').checked && APP.speechSynth) {
-                const charsOnly = [];
-                const charToTokenIdx = [];
-                tokens.forEach((tok, i) => {
-                    if (tok.type === 'char') { charsOnly.push(tok.char); charToTokenIdx.push(i); }
-                });
-                const cleanText = charsOnly.join('');
-                if (cleanText.trim().length > 0) {
-                    const utter = new SpeechSynthesisUtterance(cleanText);
-                    utter.rate = ttsRate;
-                    const speechLanguage = inferSpeechLanguage(cleanText, language);
-                    utter.lang = speechLanguage;
-                    const voice = APP.speechSynth.getVoices().find(v => v.lang.toLowerCase().startsWith(speechLanguage.toLowerCase().split('-')[0]));
-                    if (voice) utter.voice = voice;
-                    utter.onboundary = (e) => {
-                        const ci = e.charIndex;
-                        if (ci >= 0 && ci < charToTokenIdx.length) {
-                            boundaryTarget = Math.max(boundaryTarget, charToTokenIdx[ci]);
-                        }
-                    };
-                    utter.onend = () => { ttsActive = false; };
-                    utter.onerror = () => { ttsActive = false; };
-                    APP.speechSynth.speak(utter);
-                    ttsActive = true;
-                }
-            }
-
             const sleep = (ms) => new Promise(r => setTimeout(r, ms));
             // 可取消睡眠：播放被取代时立刻返回，避免旧循环残留
             const csleep = async (ms) => {
@@ -4372,7 +4309,7 @@
                             if (!alive()) break;
                             APP.mouth.phoneme = phoneme;
                             updatePhonemeBadge(phoneme);
-                            await csleep(Math.round(phonemeSpeed / ttsRate));
+                            await csleep(Math.round(phonemeSpeed));
                         }
                     } else if (tok.tag === 'auto') {
                         // [auto] 退出手动口型，恢复按文字自动换算口型
@@ -4579,16 +4516,8 @@
                     updatePhonemeBadge(phoneme);
                 }
 
-                // TTS 开启：等待 boundary 推进到当前字（最多等 600ms 兜底），使口型严格跟随语音
-                if (ttsActive) {
-                    const deadline = Date.now() + 600;
-                    while (boundaryTarget < i && Date.now() < deadline && alive()) {
-                        await sleep(20);
-                    }
-                }
-
                 const isPunct = /[\s。，、！？.!?,，]/.test(tok.char);
-                const dwell = isPunct ? Math.round(phonemeSpeed / ttsRate * 0.5) : Math.round(phonemeSpeed / ttsRate);
+                const dwell = isPunct ? Math.round(phonemeSpeed * 0.5) : Math.round(phonemeSpeed);
                 if (APP.subtitle.revealState) {
                     APP.subtitle.revealState.sourceOffset++;
                     updateSubtitleReveal();
@@ -4626,17 +4555,16 @@
         }
         function estimateSegmentDurationMs(text) {
             let rate = 200, total = 0;
-            const ttsRate = parseFloat(document.getElementById('tts-rate').value) || 1;
             parseTokens(text || '').forEach(token => {
                 if (token.type === 'char') {
-                    const dwell = /[\s。，、！？.!?,，]/.test(token.char) ? rate / ttsRate * 0.5 : rate / ttsRate;
-                    // 与 playOneText() 的 noTTS 播放分支完全一致。
+                    const dwell = /[\s。，、！？.!?,，]/.test(token.char) ? rate * 0.5 : rate;
+                    // 与 playOneText() 的文本驱动播放完全一致。
                     total += Math.min(dwell, 250);
                 }
                 else if (token.tag === 'pause') total += parseInt(token.val) || 300;
                 else if (token.tag === 'rate') rate = parseInt(token.val) || rate;
-                // 手动口型没有 250ms 上限，且同样会受 TTS 速度倍率影响。
-                else if (token.tag === 'lip') total += (token.val || '').split(/[\s,，、]+/).filter(Boolean).length * (rate / ttsRate);
+                // 手动口型没有 250ms 上限。
+                else if (token.tag === 'lip') total += (token.val || '').split(/[\s,，、]+/).filter(Boolean).length * rate;
             });
             return total;
         }
@@ -4716,10 +4644,10 @@
                         // 有配音：播放音频，口型动画同步跑
                         const audioP = playSegAudio(s);
                         await audioP.started;
-                        if (txt) await playOneText(txt, `正在播放第${s + 1}/${APP.segments.length}段(配音)...`, true, segLanguage(s));
+                        if (txt) await playOneText(txt, `正在播放第${s + 1}/${APP.segments.length}段(配音)...`, segLanguage(s));
                         await audioP.done;
                     } else {
-                        const done = await playOneText(txt, `正在播放第${s + 1}/${APP.segments.length}段...`, useGlobalAudio, segLanguage(s));
+                        const done = await playOneText(txt, `正在播放第${s + 1}/${APP.segments.length}段...`, segLanguage(s));
                         if (!done) break;
                     }
                     await sleep(400);
@@ -4733,14 +4661,14 @@
                 if (segAudio(segIdx)) {
                     const audioP = playSegAudio(segIdx);
                     await audioP.started;
-                    if (txt) await playOneText(txt, `正在播放第${segIdx + 1}段(配音)...`, true, segLanguage(segIdx));
+                    if (txt) await playOneText(txt, `正在播放第${segIdx + 1}段(配音)...`, segLanguage(segIdx));
                     await audioP.done;
                 } else if (txt) {
                     const useGlobalAudio = !!APP.globalAudio?.url;
                     if (useGlobalAudio) {
                         await prepareAndPlayAudio(APP.globalAudio.url, globalAudioOffsetForSegment(segIdx));
                     }
-                    await playOneText(txt, `正在播放第${segIdx + 1}段${useGlobalAudio ? '(整体配音定位)' : ''}...`, useGlobalAudio, segLanguage(segIdx));
+                    await playOneText(txt, `正在播放第${segIdx + 1}段${useGlobalAudio ? '(整体配音定位)' : ''}...`, segLanguage(segIdx));
                 }
             }
 
@@ -4761,7 +4689,6 @@
             APP.scriptPlaying = false;
             APP.playingSegmentIndex = -1;
             refreshPlaybackButtons();
-            if (APP.speechSynth) APP.speechSynth.cancel();
             if (APP.audioElement) APP.audioElement.pause();
             APP.mouth.phoneme = 'm';
             setSubtitleText('');
@@ -4795,7 +4722,7 @@
             APP.fx.flashUntil = performance.now() / 1000 + APP.fx.flashDuration;
         }
         const UI_EN = {
-            '口型动画与插图动态 Studio':'Lip Sync & Illustration FX Studio','WebGL v3.0 工程保存+一键导入+扰动XY分离':'WebGL v3.0 · Project files · Quick import · XY distortion',
+            '口型动画与插图动态 Studio':'Lip Sync & Illustration FX Studio',
             '一键导入(文件夹)':'Quick Import (Folder)','一键导入 PSD':'Quick Import PSD','选择 PSD 文件并按图层名拆分导入':'Choose a PSD file and import layers by name','新建工程':'New Project','清空当前工程并创建一个空白工程':'Create a new blank project','保存工程':'Save Project','读取工程':'Load Project','导出工程文件':'Export Project','导入工程文件':'Import Project',
             '导出 WebM':'Export WebM','导出 MP4':'Export MP4','较小':'Smaller file','标准':'Standard','高画质':'High quality',
             '较小文件':'Smaller file','标准画质':'Standard quality','高画质':'High quality',
@@ -4818,7 +4745,6 @@
             '导出失败':'Export failed','图层名':'Layer name','导出/导入':'Export / Import','工程名称（用于保存与导出文件名）':'Project name (used in saved and exported filenames)',
             '视频文件大小与画质':'Video size and quality','导出失败：':'Export failed:','导出完成':'Export complete','读取工程失败':'Could not load project',
             '导入工程文件':'Import Project','导出当前角色':'Export Character','删除当前角色':'Delete Character','复制':'Duplicate','重命名':'Rename',
-            '图层结构与独立的蒙版/贴图':'Layers and per-layer masks/textures',
             '选择要导入的图片文件夹':'Choose an image folder to import','遮罩位置X':'Mask Position X','遮罩位置Y':'Mask Position Y',
             '遮罩大小X':'Mask Width','遮罩大小Y':'Mask Height','新增画面特效参数（也可由台词 Tag 控制）':'Visual Effects (also controlled by dialogue tags)',
             '台词内嵌 Tag 控制语法：':'Dialogue Tag Syntax:','默认语言':'Default','中文':'Chinese','日语':'Japanese','英语':'English',
@@ -4835,6 +4761,7 @@
             '自动生成口型草稿':'Auto-generate lip draft','用本段配音和台词生成可编辑的音素时间草稿':'Generate an editable phoneme-timing draft from this segment’s audio and text'
         };
         Object.assign(UI_EN, {
+            '本段口型语言': 'Lip-sync language for this segment',
             '像素化': 'Pixelation',
             '像素步长 (px)': 'Pixel size (px)',
             '抽帧': 'Frame skip',
@@ -5141,9 +5068,6 @@
                 blink: APP.blink,
                 breath: APP.breath,
                 mouth: { activeEyeVariant: APP.mouth.activeEyeVariant, activeVariant: APP.mouth.activeVariant },
-                ttsRate: parseFloat(document.getElementById('tts-rate').value),
-                ttsEnable: document.getElementById('tts-enable').checked,
-                language: APP.language,
                 subtitle: {
                     enabled: APP.subtitle.enabled, typewriter: APP.subtitle.typewriter,
                     typewriterSound: APP.subtitle.typewriterSound, soundWave: APP.subtitle.soundWave, soundFrequency: APP.subtitle.soundFrequency, soundVolume: APP.subtitle.soundVolume,
@@ -5196,9 +5120,8 @@
             syncActiveCharacter();
             const character = getActiveCharacter();
             const state = buildActiveCharacterState();
-            // 台词、字幕、TTS 与编辑器视图属于工程，不应随角色素材包迁移。
-            delete state.segments; delete state.zoom; delete state.ttsRate; delete state.ttsEnable;
-            delete state.language; delete state.subtitle;
+            // 台词、字幕与编辑器视图属于工程，不应随角色素材包迁移。
+            delete state.segments; delete state.zoom; delete state.subtitle;
             return {
                 format: 'LipSyncFXCharacter', version: '1.0',
                 character: { id: character.id, name: character.name, state }
@@ -5247,7 +5170,6 @@
             if (!window.confirm(message)) return;
 
             if (APP.scriptPlaying) stopScriptSequence();
-            APP.speechSynth?.cancel();
 
             const textureSet = new Set();
             const releaseTexture = texture => {
@@ -5327,10 +5249,6 @@
             window.clearTransformSelection?.();
 
             document.getElementById('project-name').value = 'lip-sync-project';
-            document.getElementById('tts-enable').checked = false;
-            document.getElementById('tts-rate').value = 1;
-            document.getElementById('val-tts-rate').textContent = '1.00x';
-            document.getElementById('script-language').value = 'auto';
             document.getElementById('export-with-audio').checked = false;
             document.getElementById('audio-upload').value = '';
             document.getElementById('audio-file-label').textContent = english ? 'Attach audio file' : '绑定音频文件';
@@ -5501,15 +5419,6 @@
             renderBreathParts();
             APP.mouth.activeEyeVariant = saved.mouth.activeEyeVariant;
             APP.mouth.activeVariant = saved.mouth.activeVariant;
-            if (restoreProjectSettings && saved.ttsRate != null) {
-                document.getElementById('tts-rate').value = saved.ttsRate;
-                document.getElementById('val-tts-rate').innerText = parseFloat(saved.ttsRate).toFixed(2) + 'x';
-            }
-            if (restoreProjectSettings && saved.ttsEnable != null) document.getElementById('tts-enable').checked = saved.ttsEnable;
-            if (restoreProjectSettings) {
-                APP.language = saved.language || 'auto';
-                document.getElementById('script-language').value = APP.language;
-            }
             if (restoreProjectSettings && saved.subtitle) {
                 Object.assign(APP.subtitle, saved.subtitle);
                 document.getElementById('subtitle-enable').checked = !!APP.subtitle.enabled;
@@ -6673,12 +6582,6 @@
             document.getElementById('breath-period').addEventListener('input', e => APP.breath.period = parseFloat(e.target.value) || 3.5);
             document.getElementById('breath-easing').addEventListener('change', e => APP.breath.easing = e.target.value);
             renderBreathParts();
-
-            document.getElementById('tts-rate').addEventListener('input', e => {
-                const v = parseFloat(e.target.value);
-                document.getElementById('val-tts-rate').innerText = v.toFixed(2) + 'x';
-            });
-            document.getElementById('script-language').addEventListener('change', e => APP.language = e.target.value);
 
             document.getElementById('fx-glitch-on').addEventListener('change', e => APP.fx.glitch.on = e.target.checked);
             document.getElementById('fx-glitch-type').addEventListener('change', e => APP.fx.glitch.type = parseInt(e.target.value) || 0);
