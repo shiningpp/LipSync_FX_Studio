@@ -1895,10 +1895,11 @@
                 box.appendChild(row);
             });
             box.querySelectorAll('.bp-in').forEach(inp => {
-                inp.addEventListener('input change', e => {
+                const updatePart = e => {
                     const pi = +e.target.dataset.p, k = e.target.dataset.k;
                     APP.breath.parts[pi][k] = (k === 'easing') ? e.target.value : (parseFloat(e.target.value) || 0);
-                });
+                };
+                inp.addEventListener(inp.tagName === 'SELECT' ? 'change' : 'input', updatePart);
             });
         }
 
@@ -2901,7 +2902,7 @@
                     s = s * 2 - 1;
                 }
                 else s = Math.sin(cyc * Math.PI * 2);
-                breathY = s * (part.amp || 0.03) / (baseScY || 1);
+                breathY = s * (Number.isFinite(Number(part.amp)) ? Number(part.amp) : 0.03) / (baseScY || 1);
             }
             const transform = variantSettings || layer;
             const motion = APP.motion;
