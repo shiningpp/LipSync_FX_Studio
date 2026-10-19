@@ -166,11 +166,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <label for="ui-language" class="sr-only">界面语言</label>
-            <select id="ui-language" class="bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200" title="切换界面语言">
-                <option value="zh">中文</option><option value="en">English</option>
-            </select>
-            <div class="h-4 w-[1px] bg-zinc-800"></div>
             <input id="project-name" value="lip-sync-project" maxlength="60" title="工程名称（用于保存与导出文件名）" class="w-32 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200" placeholder="工程名称">
             <button id="global-undo-btn" class="text-xs px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300" title="撤销 (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i> 撤销</button>
             <button id="global-redo-btn" class="text-xs px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300" title="恢复 (Ctrl+Y)" disabled><i class="fa-solid fa-rotate-right"></i> 恢复</button>
@@ -323,10 +318,14 @@
                                 <button id="breath-easing-tag" type="button" class="preview-insert-tag-button" aria-label="插入呼吸缓动控制语句" title="插入呼吸缓动控制语句"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
                             </div>
                         </div>
+                        <div class="flex items-center gap-2">
+                            <label class="flex items-center gap-1.5 text-[10px] text-zinc-300"><input type="checkbox" id="breath-reverse" class="accent-pink-500">反向（先下后上）</label>
+                            <button id="breath-reverse-tag" type="button" class="preview-insert-tag-button" aria-label="插入呼吸反向控制语句" title="插入呼吸反向控制语句"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
+                        </div>
                         <button id="breath-enable-tag" type="button" class="preview-insert-tag-button" aria-label="插入当前呼吸状态" title="插入当前呼吸状态"><i class="fa-solid fa-code" aria-hidden="true"></i></button>
                         <div class="text-[10px] text-zinc-400 mt-1">每个部件独立幅度与滞后：</div>
                         <div id="breath-parts" class="space-y-1"></div>
-                        <div class="text-[10px] text-zinc-500 leading-relaxed">在「图层」页每个图层的"呼吸"勾选框旁选择部件序号（#1~#5）。幅度=该部件上下位移强度；滞后(秒)=相对整体节奏的相位偏移。</div>
+                        <div class="text-[10px] text-zinc-500 leading-relaxed">在「图层」面板每个图层的"呼吸"勾选框旁选择部件序号（#1~#5）。</div>
                     </div>
 
                 </div>
@@ -487,7 +486,7 @@
                         <div><code class="text-sky-300">[blink:3:120:300]</code> <span>眨眼次数:闭眼时长（毫秒）:间隔（毫秒）；闭眼时长默认约为 speed 的 2 倍，间隔默认 180 毫秒。</span></div>
                         <div><code class="text-sky-300">[blink:speed:60] [blink:interval:2:5]</code> <span>speed 设置闭眼时长（毫秒）；interval 设置最小:最大间隔（秒）。</span></div>
                         <div><code class="text-sky-300">[blink:on] [blink:off] [blink:open] [blink:half] [blink:close]</code> <span>分别启用/停用自动眨眼，或固定眼睛为全开、半闭、闭眼；闭眼动作只写 close。</span></div>
-                        <div><code class="text-sky-300">[breath:on] [breath:off] [breath:period:3.5]</code> <span>启用/停用呼吸；period 设置周期（秒）。</span></div>
+                        <div><code class="text-sky-300">[breath:on] [breath:off] [breath:period:3.5] [breath:reverse:on]</code> <span>启用/停用呼吸；period 设置周期（秒）；reverse:on 反向（先下后上），reverse:off 恢复默认方向。</span></div>
                         <div><code class="text-sky-300">[breath:easing:sine] [breath:part:1:0.03:0:sine]</code> <span>缓动可选 sine/inout/linear/breathe/pulse；part 参数为部位序号(1–5):幅度:相位:缓动。</span></div>
                         <div class="xl:col-span-2 border-b border-zinc-800 pb-1 pt-1 font-semibold text-zinc-300">画面特效</div>
                         <div><code class="text-fuchsia-300">[shake:2:8:12:0.8] [shake:stop]</code> <span>时长（秒）:幅度:频率:随机度；时长 -1 持续震动，stop 停止；后三项默认 8/12/0.8。</span></div>
@@ -808,6 +807,7 @@
                 enabled: false,
                 period: 3.5,
                 easing: 'sine',
+                reverse: false,
                 // 每个部件独立幅度、滞后（相位）与缓动，部件序号 1~5
                 parts: [
                     { amp: 0.03, phase: 0, easing: 'sine' },
@@ -977,6 +977,7 @@
                 syncPreviewCycleButton('preview-eye-toggle', 'preview-eye', 'preview-eye-label', '眼睛状态');
                 setValue('blink-speed', APP.blink.speed); setValue('blink-min', APP.blink.minInterval / 1000); setValue('blink-max', APP.blink.maxInterval / 1000);
                 const breathEnable = document.getElementById('breath-enable'); if (breathEnable) breathEnable.checked = !!APP.breath.enabled;
+                const breathReverse = document.getElementById('breath-reverse'); if (breathReverse) breathReverse.checked = !!APP.breath.reverse;
                 setValue('breath-period', APP.breath.period); setValue('breath-easing', APP.breath.easing);
                 const gm = APP.globalMask;
                 const gmEnable = document.getElementById('global-mask-enable'); if (gmEnable) gmEnable.checked = !!gm.enabled;
@@ -2043,6 +2044,12 @@
             layer.breathOn = on;
             if (on && !layer.breathPart) layer.breathPart = 1;
         };
+        function setGlobalBreathEasing(easing) {
+            if (!['sine','inout','linear','breathe','pulse'].includes(easing)) return;
+            APP.breath.easing = easing;
+            APP.breath.parts.forEach(part => { part.easing = easing; });
+            document.querySelectorAll('#breath-parts [data-k="easing"]').forEach(select => { select.value = easing; });
+        }
         function renderBreathParts() {
             const box = document.getElementById('breath-parts');
             if (!box) return;
@@ -3279,6 +3286,7 @@
                     s = s * 2 - 1;
                 }
                 else s = Math.sin(cyc * Math.PI * 2);
+                if (bp.reverse) s *= -1;
                 breathY = s * (Number.isFinite(Number(part.amp)) ? Number(part.amp) : 0.03) / (baseScY || 1);
             }
             const transform = variantSettings || layer;
@@ -3619,6 +3627,7 @@
                 if (first === 'on' || first === 'off') return parts.length === 1;
                 if (first === 'period') return number(parts[1]);
                 if (first === 'easing') return ['sine', 'inout', 'linear', 'breathe', 'pulse'].includes(parts[1]);
+                if (first === 'reverse') return parts.length === 2 && ['on', 'off'].includes(parts[1].toLowerCase());
                 if (first === 'part') return Number.isInteger(Number(parts[1])) && Number(parts[1]) >= 1 && Number(parts[1]) <= 5 && parts.slice(2, 4).every(number);
                 return false;
             }
@@ -3747,11 +3756,12 @@
                 return { parts, fields: [numeric('次数', parts[0] || 1, 1, 20), numeric('闭眼时长（毫秒）', parts[1] || 120, 1, 2000), numeric('间隔（毫秒）', parts[2] || 300, 1, 10000)] };
             }
             if (tag === 'breath') {
-                const modes = ['on','off','period','easing','part'];
+                const modes = ['on','off','period','easing','reverse','part'];
                 if (modes.includes(parts[0])) {
                     const fields = [choice('类型', parts[0], modes)];
                     if (parts[0] === 'period') fields.push(numeric('周期（秒）', parts[1] || 3.5, 0.1, 30, 0.1));
                     if (parts[0] === 'easing') fields.push(choice('缓动', parts[1] || 'sine', ['sine','inout','linear','breathe','pulse']));
+                    if (parts[0] === 'reverse') fields.push(choice('状态', parts[1] || 'off', ['on','off']));
                     if (parts[0] === 'part') fields.push(numeric('部位序号', parts[1] || 1, 1, 5), numeric('幅度', parts[2] || 0.03, 0, 1, 0.001), numeric('相位', parts[3] || 0, 0, 1, 0.01), choice('缓动', parts[4] || 'sine', ['sine','inout','linear','breathe','pulse']));
                     return { parts, fields };
                 }
@@ -3873,11 +3883,12 @@
                     if (['on','off','open','half','close'].includes(action)) nextParts = [action];
                     else if (action === 'speed') nextParts = [action, parsed.parts[0] === 'speed' ? fieldEls[1]?.input.value.trim() || '60' : '60'];
                     else if (action === 'interval') nextParts = [action, parsed.parts[0] === 'interval' ? fieldEls[1]?.input.value.trim() || '2' : '2', parsed.parts[0] === 'interval' ? fieldEls[2]?.input.value.trim() || '5' : '5'];
-                } else if (tag === 'breath' && ['on','off','period','easing','part'].includes(parsed.parts[0])) {
+                } else if (tag === 'breath' && ['on','off','period','easing','reverse','part'].includes(parsed.parts[0])) {
                     const action = fieldEls[0]?.input.value.trim() || parsed.parts[0];
                     if (action === 'on' || action === 'off') nextParts = [action];
                     else if (action === 'period') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || '3.5' : '3.5'];
                     else if (action === 'easing') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || 'sine' : 'sine'];
+                    else if (action === 'reverse') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || 'off' : 'off'];
                     else if (action === 'part') nextParts = [action, ...(parsed.parts[0] === action ? fieldEls.slice(1).map(({ input }) => input.value.trim()) : ['1', '0.03', '0', 'sine'])];
                 } else {
                     for (let i = 0; i < fieldEls.length; i++) {
@@ -5098,7 +5109,8 @@
                         if (p[0] === 'on') APP.breath.enabled = true;
                         else if (p[0] === 'off') APP.breath.enabled = false;
                         else if (p[0] === 'period') { const v = parseFloat(p[1]); if (!isNaN(v)) APP.breath.period = v; }
-                        else if (p[0] === 'easing' && ['sine','inout','linear','breathe','pulse'].includes(p[1])) APP.breath.easing = p[1];
+                        else if (p[0] === 'easing') setGlobalBreathEasing(p[1]);
+                        else if (p[0] === 'reverse') APP.breath.reverse = p[1] === 'on';
                         else if (p[0] === 'part') {
                             const n = (parseInt(p[1]) || 1) - 1;
                             if (n >= 0 && n < APP.breath.parts.length) {
@@ -5111,6 +5123,7 @@
                         const breathEnable = document.getElementById('breath-enable'); if (breathEnable) breathEnable.checked = APP.breath.enabled;
                         const breathPeriod = document.getElementById('breath-period'); if (breathPeriod) breathPeriod.value = APP.breath.period;
                         const breathEasing = document.getElementById('breath-easing'); if (breathEasing) breathEasing.value = APP.breath.easing;
+                        const breathReverse = document.getElementById('breath-reverse'); if (breathReverse) breathReverse.checked = !!APP.breath.reverse;
                         renderBreathParts();
                     } else if (tok.tag === 'blink') {
                         // [blink:次数:单次时长ms:间隔ms]；亦支持 on/off/open/half/close
@@ -5996,7 +6009,7 @@
             const layers = [], framePos = {};
             const blink = { enabled:true, frame:'open', timer:0, speed:60, minInterval:2000, maxInterval:5000, nextBlinkTime:2000, sequence:null };
             const breath = {
-                enabled:false, period:3.5, easing:'sine',
+                enabled:false, period:3.5, easing:'sine', reverse:false,
                 parts:[{amp:0.03,phase:0,easing:'sine'},{amp:0.03,phase:0.35,easing:'sine'},{amp:0.03,phase:0.7,easing:'sine'},{amp:0.03,phase:1.05,easing:'sine'},{amp:0.03,phase:1.4,easing:'sine'}]
             };
             const mouth = { phoneme:'m', activeVariant:'normal', activeEyeVariant:'normal' };
@@ -6057,6 +6070,7 @@
             document.getElementById('breath-enable').checked = false;
             document.getElementById('breath-period').value = 3.5;
             document.getElementById('breath-easing').value = 'sine';
+            document.getElementById('breath-reverse').checked = false;
             document.getElementById('global-mask-enable').checked = false;
             [['gm-ox',0],['gm-oy',0],['gm-sx',1],['gm-sy',1]].forEach(([id,value]) => {
                 document.getElementById(id).value = value;
@@ -6205,7 +6219,9 @@
                 Object.assign(APP.breath, saved.breath);
                 if (!Array.isArray(APP.breath.parts)) APP.breath.parts = [{amp:0.03,phase:0},{amp:0.03,phase:0.35},{amp:0.03,phase:0.7}];
             }
+            APP.breath.reverse = !!APP.breath.reverse;
             document.getElementById('breath-enable').checked = APP.breath.enabled;
+            document.getElementById('breath-reverse').checked = APP.breath.reverse;
             document.getElementById('breath-period').value = APP.breath.period;
             document.getElementById('breath-easing').value = APP.breath.easing;
             renderBreathParts();
@@ -7272,6 +7288,7 @@
             addInsertHandler('breath-enable-tag', () => `[breath:${document.getElementById('breath-enable').checked ? 'on' : 'off'}]`);
             addInsertHandler('breath-period-tag', () => `[breath:period:${parseFloat(document.getElementById('breath-period').value) || 3.5}]`);
             addInsertHandler('breath-easing-tag', () => `[breath:easing:${document.getElementById('breath-easing').value || 'sine'}]`);
+            addInsertHandler('breath-reverse-tag', () => `[breath:reverse:${document.getElementById('breath-reverse').checked ? 'on' : 'off'}]`);
             document.querySelectorAll('#blink-preview-controls button, #breath-preview-controls button').forEach(button => {
                 button.addEventListener('mousedown', event => event.preventDefault());
             });
@@ -7578,18 +7595,8 @@
             setupFxPreviewControlReadouts();
             setupAnimationPreviewControls();
             document.getElementById('new-project-btn').addEventListener('click', createNewProject);
-            const languageSelect = document.getElementById('ui-language');
-            languageSelect.value = localStorage.getItem('lipSyncFXStudioUiLanguage') === 'en' ? 'en' : 'zh';
-            languageSelect.addEventListener('change', e => { setUiLanguage(e.target.value); renderBreathParts(); renderSubtitleBreakpoints(); refreshPlaybackButtons(); window.refreshTransformTargets?.(); window.updateTransformOverlay?.(); });
-            setUiLanguage(languageSelect.value);
+            setUiLanguage('zh');
             renderBreathParts();
-            let languageRefreshTimer;
-            new MutationObserver(records => {
-                if (languageSelect.value !== 'en' || !records.length) return;
-                clearTimeout(languageRefreshTimer);
-                const changed = records.flatMap(record => record.type === 'characterData' ? [record.target] : Array.from(record.addedNodes));
-                languageRefreshTimer = setTimeout(() => setUiLanguage('en', changed), 80);
-            }).observe(document.body, { childList: true, characterData: true, subtree: true });
             document.getElementById('dock-timing-draft')?.addEventListener('click', generatePauseRateDraft);
             document.getElementById('dock-auto-lip')?.addEventListener('click', generateAutoLipDraft);
             // 将所有右侧工具迁入页面底部，给控制语句、配音与字幕足够的可视空间。
@@ -7615,7 +7622,7 @@
                 APP.characters.push({
                     id, name: `角色 ${index}`, layers: [], framePos: {},
                     blink: { enabled: true, frame: 'open', timer: 0, speed: 60, minInterval: 2000, maxInterval: 5000, nextBlinkTime: 2000, sequence: null },
-                    breath: { enabled: false, period: 3.5, easing: 'sine', parts: [{amp:0.03,phase:0,easing:'sine'},{amp:0.03,phase:0.35,easing:'sine'},{amp:0.03,phase:0.7,easing:'sine'},{amp:0.03,phase:1.05,easing:'sine'},{amp:0.03,phase:1.4,easing:'sine'}] },
+                    breath: { enabled: false, period: 3.5, easing: 'sine', reverse:false, parts: [{amp:0.03,phase:0,easing:'sine'},{amp:0.03,phase:0.35,easing:'sine'},{amp:0.03,phase:0.7,easing:'sine'},{amp:0.03,phase:1.05,easing:'sine'},{amp:0.03,phase:1.4,easing:'sine'}] },
                     mouth: { phoneme: 'm', activeVariant: 'normal', activeEyeVariant: 'normal' },
                     globalMask: { tex: null, enabled: false, offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }
                 });
@@ -7702,7 +7709,8 @@
 
             document.getElementById('breath-enable').addEventListener('change', e => APP.breath.enabled = e.target.checked);
             document.getElementById('breath-period').addEventListener('input', e => APP.breath.period = parseFloat(e.target.value) || 3.5);
-            document.getElementById('breath-easing').addEventListener('change', e => APP.breath.easing = e.target.value);
+            document.getElementById('breath-easing').addEventListener('change', e => setGlobalBreathEasing(e.target.value));
+            document.getElementById('breath-reverse').addEventListener('change', e => APP.breath.reverse = e.target.checked);
             renderBreathParts();
 
             document.getElementById('fx-glitch-on').addEventListener('change', e => APP.fx.glitch.on = e.target.checked);
