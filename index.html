@@ -989,7 +989,7 @@
             APP.mouth = character.mouth; APP.globalMask = character.globalMask;
             if (refresh) {
                 refreshCharacterSelector();
-                renderLayersUI(); refreshVariantSelectors(); renderBreathParts(); renderBreathPresetControls();
+                renderLayersUI(); refreshVariantSelectors(); renderVariantPresetControls(); renderBreathParts(); renderBreathPresetControls();
                 // 分段卡片中的角色下拉框也依赖角色列表；新增/复制角色后必须重建。
                 renderSegmentList();
                 const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
@@ -6571,6 +6571,7 @@
                 await restoreActiveCharacterState(saved);
                 syncActiveCharacter();
                 refreshCharacterSelector();
+                renderVariantPresetControls();
                 renderBreathPresetControls();
                 return;
             }
