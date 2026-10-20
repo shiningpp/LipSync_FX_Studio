@@ -296,6 +296,18 @@
 
                     <!-- 呼吸控制 -->
                     <div class="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 space-y-2.5">
+                        <div class="border-b border-zinc-800 pb-2 space-y-1.5">
+                            <div class="flex gap-1">
+                                <input id="breath-preset-name" type="text" maxlength="40" placeholder="新呼吸预设名称" class="min-w-0 flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-200">
+                                <button id="breath-preset-add" type="button" class="preview-insert-tag-button" aria-label="新增呼吸预设" title="新增呼吸预设"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="flex gap-1">
+                                <select id="breath-preset-select" class="min-w-0 flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-200"><option value="">选择已保存呼吸预设</option></select>
+                                <button id="breath-preset-overwrite" type="button" class="preview-insert-tag-button" aria-label="覆盖保存所选呼吸预设" title="覆盖保存到所选呼吸预设" disabled><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i></button>
+                                <button id="breath-preset-delete" type="button" class="preview-insert-tag-button" aria-label="删除呼吸预设" title="删除呼吸预设" disabled><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="flex justify-end"><button id="insert-all-breath-tags" type="button" class="preview-insert-tag-button" aria-label="插入全部呼吸参数" title="在光标处插入全局、部件和图层呼吸参数"><i class="fa-solid fa-code" aria-hidden="true"></i></button></div>
+                        </div>
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-pink-400"><i class="fa-solid fa-wind mr-1"></i> 呼吸运动</span>
                             <input type="checkbox" id="breath-enable" class="accent-pink-500 rounded cursor-pointer">
@@ -349,9 +361,20 @@
                     <select id="preview-transform-target" class="hidden" aria-hidden="true" tabindex="-1"><option value="off">关闭</option><option value="mask">全局遮罩</option></select>
                     <details class="bg-zinc-950/70 border border-zinc-800 rounded p-2">
                         <summary class="cursor-pointer text-zinc-300 flex items-center gap-1 font-semibold"><i class="fa-solid fa-layer-group text-cyan-400"></i> 切换图层差分</summary>
+                        <div class="mt-2 border-t border-zinc-800 pt-2 space-y-1.5">
+                            <div class="flex gap-1">
+                                <input id="variant-preset-name" type="text" maxlength="40" placeholder="新组合名称" class="min-w-0 flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-200">
+                                <button id="variant-preset-add" type="button" class="preview-insert-tag-button" aria-label="新增差分组合" title="新增差分组合"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="flex gap-1">
+                                <select id="variant-preset-select" class="min-w-0 flex-1 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-200"><option value="">选择已保存组合</option></select>
+                                <button id="variant-preset-overwrite" type="button" class="preview-insert-tag-button" aria-label="覆盖保存所选组合" title="覆盖保存到所选组合" disabled><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i></button>
+                                <button id="variant-preset-delete" type="button" class="preview-insert-tag-button" aria-label="删除差分组合" title="删除差分组合" disabled><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-end"><button id="insert-preview-variants" type="button" class="preview-insert-tag-button" aria-label="插入当前图层差分控制语句" title="在当前光标位置插入所有图层当前差分控制语句"><i class="fa-solid fa-code" aria-hidden="true"></i></button></div>
                         <!-- 每个图层（脸/头发/眼睛/嘴...）的差分滑块动态插入这里 -->
                         <div id="variant-selectors" class="flex flex-col items-stretch gap-1.5 mt-2"></div>
-                        <div class="mt-2 flex justify-end"><button id="insert-preview-variants" type="button" class="preview-insert-tag-button" aria-label="插入当前图层差分控制语句" title="在当前光标位置插入所有图层当前差分控制语句"><i class="fa-solid fa-code" aria-hidden="true"></i></button></div>
                     </details>
                     <details id="mouth-preview-panel" class="bg-zinc-950/70 border border-zinc-800 rounded p-2">
                         <summary class="cursor-pointer text-zinc-300 flex items-center gap-1 font-semibold"><i class="fa-solid fa-comment text-blue-400"></i> 口型</summary>
@@ -375,6 +398,10 @@
                         </div>
                         <div id="blink-preview-controls" class="mt-2 space-y-2 text-[10px] text-zinc-400"></div>
                     </details>
+                        <details id="breath-preview-panel" class="bg-zinc-950/70 border border-zinc-800 rounded p-2">
+                            <summary class="cursor-pointer text-zinc-300 flex items-center gap-1 font-semibold"><i class="fa-solid fa-wind text-pink-400"></i> 呼吸</summary>
+                            <div id="breath-preview-controls" class="mt-2 space-y-2 text-[10px] text-zinc-400"></div>
+                        </details>
                     <details id="fx-preview-panel" class="min-w-0 bg-zinc-950/70 border border-zinc-800 rounded p-2">
                         <summary class="text-zinc-300 flex items-center gap-1 font-semibold cursor-pointer"><i class="fa-solid fa-wand-magic-sparkles text-fuchsia-400"></i> 特效</summary>
                         <div class="flex flex-col gap-2 mt-2 text-[10px] text-zinc-400">
@@ -411,10 +438,6 @@
                             <div class="fx-preview-group rounded border border-zinc-800 bg-zinc-900/60 p-1.5 space-y-1" data-fx-group="shutdown"><div class="font-semibold text-zinc-200">关机</div><label>时长(ms) <input id="fx-shutdown-duration" type="number" min="100" max="5000" step="50" value="550" class="w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5"></label><button id="fx-shutdown-trigger" type="button" class="preview-insert-tag-button" aria-label="预览关机" title="预览关机"><i class="fa-solid fa-play" aria-hidden="true"></i></button></div>
                         </div>
                     </details>
-                <details id="breath-preview-panel" class="bg-zinc-950/70 border border-zinc-800 rounded p-2">
-                    <summary class="cursor-pointer text-zinc-300 flex items-center gap-1 font-semibold"><i class="fa-solid fa-wind text-pink-400"></i> 呼吸</summary>
-                    <div id="breath-preview-controls" class="mt-2 space-y-2 text-[10px] text-zinc-400"></div>
-                </details>
                 </div>
 
                 <div class="flex flex-col items-end gap-2 pointer-events-auto max-h-full">
@@ -488,6 +511,7 @@
                         <div><code class="text-sky-300">[blink:on] [blink:off] [blink:open] [blink:half] [blink:close]</code> <span>分别启用/停用自动眨眼，或固定眼睛为全开、半闭、闭眼；闭眼动作只写 close。</span></div>
                         <div><code class="text-sky-300">[breath:on] [breath:off] [breath:period:3.5] [breath:reverse:on]</code> <span>启用/停用呼吸；period 设置周期（秒）；reverse:on 反向（先下后上），reverse:off 恢复默认方向。</span></div>
                         <div><code class="text-sky-300">[breath:easing:sine] [breath:part:1:0.03:0:sine]</code> <span>缓动可选 sine/inout/linear/breathe/pulse；part 参数为部位序号(1–5):幅度:相位:缓动。</span></div>
+                        <div><code class="text-sky-300">[breath:layer:body:on:1]</code> <span>按图层 ID 启用/停用该图层呼吸，并指定部位序号（0–5，0 表示不分配）；插入全部呼吸控制会为当前图层生成此项。</span></div>
                         <div class="xl:col-span-2 border-b border-zinc-800 pb-1 pt-1 font-semibold text-zinc-300">画面特效</div>
                         <div><code class="text-fuchsia-300">[shake:2:8:12:0.8] [shake:stop]</code> <span>时长（秒）:幅度:频率:随机度；时长 -1 持续震动，stop 停止；后三项默认 8/12/0.8。</span></div>
                         <div><code class="text-yellow-300">[flash] [flash:350]</code> <span>闪白时长（毫秒），省略时长默认为 350。</span></div>
@@ -965,7 +989,7 @@
             APP.mouth = character.mouth; APP.globalMask = character.globalMask;
             if (refresh) {
                 refreshCharacterSelector();
-                renderLayersUI(); refreshVariantSelectors(); renderBreathParts();
+                renderLayersUI(); refreshVariantSelectors(); renderBreathParts(); renderBreathPresetControls();
                 // 分段卡片中的角色下拉框也依赖角色列表；新增/复制角色后必须重建。
                 renderSegmentList();
                 const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
@@ -1809,6 +1833,71 @@
             refreshVariantSelectors();
         }
 
+        function renderVariantPresetControls() {
+            const select = document.getElementById('variant-preset-select');
+            if (!select) return;
+            const character = getActiveCharacter();
+            const presets = Array.isArray(character?.variantPresets) ? character.variantPresets : [];
+            const selected = select.value;
+            select.replaceChildren(new Option('选择已保存组合', ''));
+            presets.forEach(preset => select.add(new Option(preset.name, preset.id)));
+            select.value = presets.some(preset => preset.id === selected) ? selected : '';
+            const hasSelection = !!select.value;
+            document.getElementById('variant-preset-overwrite').disabled = !hasSelection;
+            document.getElementById('variant-preset-delete').disabled = !hasSelection;
+        }
+        function getCurrentVariantSelections() {
+            return APP.layers.filter(layer => layer.variants && layer.currentTag && layer.variants[layer.currentTag])
+                .map(layer => ({ layerId:String(layer.id), tag:layer.currentTag }));
+        }
+        function addVariantPreset() {
+            const nameInput = document.getElementById('variant-preset-name');
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+            const selections = getCurrentVariantSelections();
+            if (!selections.length) { alert('当前没有可保存的图层差分。'); return; }
+            const character = getActiveCharacter();
+            character.variantPresets ||= [];
+            if (character.variantPresets.some(item => item.name === name)) { alert('组合名称已存在，请换一个名称。'); nameInput.focus(); return; }
+            const preset = { id:`variant_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, name, selections };
+            character.variantPresets.push(preset);
+            renderVariantPresetControls();
+            document.getElementById('variant-preset-select').value = preset.id;
+            renderVariantPresetControls();
+            nameInput.value = '';
+        }
+        function overwriteVariantPreset() {
+            const character = getActiveCharacter();
+            const id = document.getElementById('variant-preset-select').value;
+            const preset = character?.variantPresets?.find(item => item.id === id);
+            if (!preset) return;
+            const selections = getCurrentVariantSelections();
+            if (!selections.length) { alert('当前没有可保存的图层差分。'); return; }
+            preset.selections = selections;
+            renderVariantPresetControls();
+        }
+        function applyVariantPreset() {
+            const character = getActiveCharacter();
+            const preset = character?.variantPresets?.find(item => item.id === document.getElementById('variant-preset-select').value);
+            if (!preset) return;
+            preset.selections.forEach(selection => {
+                const layer = APP.layers.find(item => String(item.id) === String(selection.layerId));
+                if (!layer?.variants?.[selection.tag]) return;
+                layer.currentTag = selection.tag;
+                if (layer.type === 'eyes') APP.mouth.activeEyeVariant = selection.tag;
+                if (layer.type === 'mouth') APP.mouth.activeVariant = selection.tag;
+            });
+            syncVariantSelectorsUI();
+            renderLayersUI();
+        }
+        function deleteVariantPreset() {
+            const character = getActiveCharacter();
+            if (!character?.variantPresets) return;
+            const id = document.getElementById('variant-preset-select').value;
+            character.variantPresets = character.variantPresets.filter(preset => preset.id !== id);
+            renderVariantPresetControls();
+        }
+
         // 每个图层只显示图层名和当前差分名；按钮与滚轮均可切换差分。
         function refreshVariantSelectors() {
             const container = document.getElementById('variant-selectors');
@@ -1892,6 +1981,7 @@
                 row.appendChild(insertButton);
                 container.appendChild(row);
             });
+            renderVariantPresetControls();
         }
 
         // 同步工具栏差分下拉的选中态为各图层当前 currentTag（不重建 DOM）
@@ -2049,6 +2139,95 @@
             APP.breath.easing = easing;
             APP.breath.parts.forEach(part => { part.easing = easing; });
             document.querySelectorAll('#breath-parts [data-k="easing"]').forEach(select => { select.value = easing; });
+        }
+        function captureBreathPreset() {
+            return {
+                enabled:!!APP.breath.enabled, period:Number(APP.breath.period) || 3.5,
+                easing:APP.breath.easing || 'sine', reverse:!!APP.breath.reverse,
+                parts:Array.from({ length:5 }, (_, index) => {
+                    const part = APP.breath.parts[index] || {};
+                    return { amp:Number(part.amp) || 0, phase:Number(part.phase) || 0, easing:part.easing || APP.breath.easing || 'sine' };
+                }),
+                layers:APP.layers.map(layer => ({ layerId:String(layer.id), enabled:!!layer.breathOn, part:Number(layer.breathPart) || 0 }))
+            };
+        }
+        function renderBreathPresetControls() {
+            const select = document.getElementById('breath-preset-select');
+            if (!select) return;
+            const character = getActiveCharacter();
+            const presets = Array.isArray(character?.breathPresets) ? character.breathPresets : [];
+            const selected = select.value;
+            select.replaceChildren(new Option(document.documentElement.lang === 'en' ? 'Select saved breathing preset' : '选择已保存呼吸预设', ''));
+            presets.forEach(preset => select.add(new Option(preset.name, preset.id)));
+            select.value = presets.some(preset => preset.id === selected) ? selected : '';
+            const hasSelection = !!select.value;
+            document.getElementById('breath-preset-overwrite').disabled = !hasSelection;
+            document.getElementById('breath-preset-delete').disabled = !hasSelection;
+        }
+        function addBreathPreset() {
+            const nameInput = document.getElementById('breath-preset-name');
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+            const character = getActiveCharacter();
+            character.breathPresets ||= [];
+            if (character.breathPresets.some(preset => preset.name === name)) { alert('呼吸预设名称已存在，请换一个名称。'); nameInput.focus(); return; }
+            const preset = { id:`breath_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, name, settings:captureBreathPreset() };
+            character.breathPresets.push(preset);
+            renderBreathPresetControls();
+            document.getElementById('breath-preset-select').value = preset.id;
+            renderBreathPresetControls();
+            nameInput.value = '';
+        }
+        function overwriteBreathPreset() {
+            const character = getActiveCharacter();
+            const id = document.getElementById('breath-preset-select').value;
+            const preset = character?.breathPresets?.find(item => item.id === id);
+            if (!preset) return;
+            preset.settings = captureBreathPreset();
+            renderBreathPresetControls();
+        }
+        function applyBreathPreset() {
+            const character = getActiveCharacter();
+            const preset = character?.breathPresets?.find(item => item.id === document.getElementById('breath-preset-select').value);
+            if (!preset?.settings) return;
+            const settings = preset.settings;
+            Object.assign(APP.breath, {
+                enabled:!!settings.enabled, period:Number(settings.period) || 3.5,
+                easing:settings.easing || 'sine', reverse:!!settings.reverse,
+                parts:Array.from({ length:5 }, (_, index) => ({
+                    amp:Number(settings.parts?.[index]?.amp) || 0,
+                    phase:Number(settings.parts?.[index]?.phase) || 0,
+                    easing:settings.parts?.[index]?.easing || settings.easing || 'sine'
+                }))
+            });
+            APP.layers.forEach(layer => { layer.breathOn = false; layer.breathPart = 0; });
+            (settings.layers || []).forEach(savedLayer => {
+                const layer = APP.layers.find(item => String(item.id) === String(savedLayer.layerId));
+                if (!layer) return;
+                layer.breathOn = !!savedLayer.enabled;
+                layer.breathPart = Math.max(0, Math.min(5, Math.round(Number(savedLayer.part) || 0)));
+            });
+            document.getElementById('breath-enable').checked = APP.breath.enabled;
+            document.getElementById('breath-period').value = APP.breath.period;
+            document.getElementById('breath-easing').value = APP.breath.easing;
+            document.getElementById('breath-reverse').checked = APP.breath.reverse;
+            renderBreathParts();
+            renderLayersUI();
+            syncActiveCharacter();
+        }
+        function deleteBreathPreset() {
+            const character = getActiveCharacter();
+            if (!character?.breathPresets) return;
+            const id = document.getElementById('breath-preset-select').value;
+            character.breathPresets = character.breathPresets.filter(preset => preset.id !== id);
+            renderBreathPresetControls();
+        }
+        function getAllBreathControlTags() {
+            const breath = APP.breath;
+            const tags = [`[breath:${breath.enabled ? 'on' : 'off'}]`, `[breath:period:${breath.period}]`, `[breath:easing:${breath.easing || 'sine'}]`, `[breath:reverse:${breath.reverse ? 'on' : 'off'}]`];
+            breath.parts.forEach((part, index) => tags.push(`[breath:part:${index + 1}:${part.amp}:${part.phase}:${part.easing || breath.easing || 'sine'}]`));
+            APP.layers.forEach(layer => tags.push(`[breath:layer:${encodeURIComponent(String(layer.id))}:${layer.breathOn ? 'on' : 'off'}:${Number(layer.breathPart) || 0}]`));
+            return tags;
         }
         function renderBreathParts() {
             const box = document.getElementById('breath-parts');
@@ -3628,6 +3807,13 @@
                 if (first === 'period') return number(parts[1]);
                 if (first === 'easing') return ['sine', 'inout', 'linear', 'breathe', 'pulse'].includes(parts[1]);
                 if (first === 'reverse') return parts.length === 2 && ['on', 'off'].includes(parts[1].toLowerCase());
+                if (first === 'layer') {
+                    let layerId = '';
+                    try { layerId = decodeURIComponent(parts[1] || ''); } catch (_) { return false; }
+                    return parts.length === 4 && APP.layers.some(layer => String(layer.id) === layerId)
+                        && ['on', 'off'].includes(parts[2].toLowerCase())
+                        && Number.isInteger(Number(parts[3])) && Number(parts[3]) >= 0 && Number(parts[3]) <= 5;
+                }
                 if (first === 'part') return Number.isInteger(Number(parts[1])) && Number(parts[1]) >= 1 && Number(parts[1]) <= 5 && parts.slice(2, 4).every(number);
                 return false;
             }
@@ -3756,12 +3942,22 @@
                 return { parts, fields: [numeric('次数', parts[0] || 1, 1, 20), numeric('闭眼时长（毫秒）', parts[1] || 120, 1, 2000), numeric('间隔（毫秒）', parts[2] || 300, 1, 10000)] };
             }
             if (tag === 'breath') {
-                const modes = ['on','off','period','easing','reverse','part'];
+                const modes = ['on','off','period','easing','reverse','layer','part'];
                 if (modes.includes(parts[0])) {
                     const fields = [choice('类型', parts[0], modes)];
                     if (parts[0] === 'period') fields.push(numeric('周期（秒）', parts[1] || 3.5, 0.1, 30, 0.1));
                     if (parts[0] === 'easing') fields.push(choice('缓动', parts[1] || 'sine', ['sine','inout','linear','breathe','pulse']));
                     if (parts[0] === 'reverse') fields.push(choice('状态', parts[1] || 'off', ['on','off']));
+                    if (parts[0] === 'layer') {
+                        let layerId = ''; try { layerId = decodeURIComponent(parts[1] || ''); } catch (_) {}
+                        const layers = APP.layers.map(layer => ({ id:encodeURIComponent(String(layer.id)), name:layer.name || String(layer.id) }));
+                        const selectedId = encodeURIComponent(layerId || String(APP.layers[0]?.id || ''));
+                        const layerField = layers.length ? choice('图层', selectedId, layers.map(layer => layer.id)) : text('图层 ID', encodeURIComponent(layerId));
+                        layerField.optionLabels = layers.map(layer => layer.name);
+                        fields.push(layerField);
+                        fields.push(choice('启用', parts[2] || 'off', ['on','off']));
+                        fields.push(numeric('部件序号', parts[3] || 0, 0, 5));
+                    }
                     if (parts[0] === 'part') fields.push(numeric('部位序号', parts[1] || 1, 1, 5), numeric('幅度', parts[2] || 0.03, 0, 1, 0.001), numeric('相位', parts[3] || 0, 0, 1, 0.01), choice('缓动', parts[4] || 'sine', ['sine','inout','linear','breathe','pulse']));
                     return { parts, fields };
                 }
@@ -3820,12 +4016,12 @@
             if (parsed.note) { const note = document.createElement('div'); note.className = 'text-zinc-400'; note.textContent = ui(parsed.note, 'Resumes automatic visemes from dialogue. No parameter to edit.'); pop.appendChild(note); }
             parsed.fields.forEach((field, i) => {
                 const row = document.createElement('label'); row.className = 'mb-2 block text-zinc-300';
-                const labels = {'口型':'Viseme','速度（毫秒/字）':'Rate (ms/char)','停顿（毫秒）':'Pause (ms)','闪白时长（毫秒）':'Flash duration (ms)','差分':'Variant','差分名称':'Variant name','动作':'Action','闭眼时长（毫秒）':'Closed duration (ms)','最小间隔（秒）':'Min interval (s)','最大间隔（秒）':'Max interval (s)','次数':'Count','间隔（毫秒）':'Interval (ms)','类型':'Type','周期（秒）':'Period (s)','缓动':'Easing','部位序号':'Part index','幅度':'Amplitude','相位':'Phase','时长（秒）':'Duration (s)','频率':'Frequency','随机度':'Randomness','色相偏移（度）':'Hue offset (deg)','色差强度':'Chromatic aberration','线间距（像素）':'Line spacing (px)','强度':'Strength','速度':'Speed','模糊强度':'Blur strength','色温强度':'Temperature','雪花强度':'Snow intensity','反相强度':'Invert strength','缩放倍率':'Zoom','X 偏移':'X offset','Y 偏移':'Y offset','时长（毫秒）':'Duration (ms)','状态':'State'};
+                const labels = {'口型':'Viseme','速度（毫秒/字）':'Rate (ms/char)','停顿（毫秒）':'Pause (ms)','闪白时长（毫秒）':'Flash duration (ms)','差分':'Variant','差分名称':'Variant name','动作':'Action','闭眼时长（毫秒）':'Closed duration (ms)','最小间隔（秒）':'Min interval (s)','最大间隔（秒）':'Max interval (s)','次数':'Count','间隔（毫秒）':'Interval (ms)','类型':'Type','周期（秒）':'Period (s)','缓动':'Easing','部位序号':'Part index','部件序号':'Part index','图层':'Layer','启用':'Enabled','幅度':'Amplitude','相位':'Phase','时长（秒）':'Duration (s)','频率':'Frequency','随机度':'Randomness','色相偏移（度）':'Hue offset (deg)','色差强度':'Chromatic aberration','线间距（像素）':'Line spacing (px)','强度':'Strength','速度':'Speed','模糊强度':'Blur strength','色温强度':'Temperature','雪花强度':'Snow intensity','反相强度':'Invert strength','缩放倍率':'Zoom','X 偏移':'X offset','Y 偏移':'Y offset','时长（毫秒）':'Duration (ms)','状态':'State'};
                 const cap = document.createElement('div'); cap.className = 'mb-1'; cap.textContent = ui(field.label, labels[field.label] || UI_EN[field.label] || field.label); row.appendChild(cap);
                 let input;
                 if (field.type === 'select') {
                     input = document.createElement('select'); input.className = 'w-full rounded border border-zinc-600 bg-zinc-900 px-2 py-1';
-                    field.options.forEach(v => { const option = document.createElement('option'); option.value = v; option.textContent = v; input.appendChild(option); });
+                    field.options.forEach((v, index) => { const option = document.createElement('option'); option.value = v; option.textContent = field.optionLabels?.[index] || v; input.appendChild(option); });
                     if (![...input.options].some(o => o.value === String(field.value))) { const option = document.createElement('option'); option.value = String(field.value); option.textContent = String(field.value); input.appendChild(option); }
                     input.value = String(field.value);
                 } else if (field.type === 'number') {
@@ -3883,12 +4079,13 @@
                     if (['on','off','open','half','close'].includes(action)) nextParts = [action];
                     else if (action === 'speed') nextParts = [action, parsed.parts[0] === 'speed' ? fieldEls[1]?.input.value.trim() || '60' : '60'];
                     else if (action === 'interval') nextParts = [action, parsed.parts[0] === 'interval' ? fieldEls[1]?.input.value.trim() || '2' : '2', parsed.parts[0] === 'interval' ? fieldEls[2]?.input.value.trim() || '5' : '5'];
-                } else if (tag === 'breath' && ['on','off','period','easing','reverse','part'].includes(parsed.parts[0])) {
+                } else if (tag === 'breath' && ['on','off','period','easing','reverse','layer','part'].includes(parsed.parts[0])) {
                     const action = fieldEls[0]?.input.value.trim() || parsed.parts[0];
                     if (action === 'on' || action === 'off') nextParts = [action];
                     else if (action === 'period') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || '3.5' : '3.5'];
                     else if (action === 'easing') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || 'sine' : 'sine'];
                     else if (action === 'reverse') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || 'off' : 'off'];
+                    else if (action === 'layer') nextParts = [action, parsed.parts[0] === action ? fieldEls[1]?.input.value.trim() || encodeURIComponent(String(APP.layers[0]?.id || '')) : encodeURIComponent(String(APP.layers[0]?.id || '')), parsed.parts[0] === action ? fieldEls[2]?.input.value.trim() || 'off' : 'off', parsed.parts[0] === action ? fieldEls[3]?.input.value.trim() || '0' : '0'];
                     else if (action === 'part') nextParts = [action, ...(parsed.parts[0] === action ? fieldEls.slice(1).map(({ input }) => input.value.trim()) : ['1', '0.03', '0', 'sine'])];
                 } else {
                     for (let i = 0; i < fieldEls.length; i++) {
@@ -5111,6 +5308,15 @@
                         else if (p[0] === 'period') { const v = parseFloat(p[1]); if (!isNaN(v)) APP.breath.period = v; }
                         else if (p[0] === 'easing') setGlobalBreathEasing(p[1]);
                         else if (p[0] === 'reverse') APP.breath.reverse = p[1] === 'on';
+                        else if (p[0] === 'layer') {
+                            let layerId = ''; try { layerId = decodeURIComponent(p[1] || ''); } catch (_) {}
+                            const layer = APP.layers.find(item => String(item.id) === layerId);
+                            if (layer) {
+                                layer.breathOn = p[2] === 'on';
+                                layer.breathPart = Math.max(0, Math.min(5, Math.round(Number(p[3]) || 0)));
+                                renderLayersUI();
+                            }
+                        }
                         else if (p[0] === 'part') {
                             const n = (parseInt(p[1]) || 1) - 1;
                             if (n >= 0 && n < APP.breath.parts.length) {
@@ -5490,6 +5696,14 @@
             '自动生成口型草稿':'Auto-generate lip draft','用本段配音和台词生成可编辑的音素时间草稿':'Generate an editable phoneme-timing draft from this segment’s audio and text'
         };
         Object.assign(UI_EN, {
+            '新呼吸预设名称': 'New breathing preset name',
+            '选择已保存呼吸预设': 'Select saved breathing preset',
+            '新增呼吸预设': 'Add breathing preset',
+            '覆盖保存所选呼吸预设': 'Overwrite selected breathing preset',
+            '覆盖保存到所选呼吸预设': 'Save over selected breathing preset',
+            '删除呼吸预设': 'Delete breathing preset',
+            '插入全部呼吸参数': 'Insert all breathing parameters',
+            '在光标处插入全局、部件和图层呼吸参数': 'Insert global, part, and layer breathing tags at the cursor',
             '口型': 'Mouth',
             '眼睛状态': 'Eye State',
             '眨眼次数:闭眼时长毫秒:间隔毫秒；speed 设置自动眨眼闭眼时长，interval 设置最小和最大间隔（秒）；也支持 on/off/open/half/close。': 'Blink count: closed duration (ms): interval (ms). speed sets auto-blink duration; interval sets minimum and maximum intervals (seconds). Also supports on/off/open/half/close.',
@@ -5845,8 +6059,16 @@
             };
         }
         function buildActiveCharacterState() {
+            const character = getActiveCharacter();
             return {
                 version: '3.2',
+                variantPresets: Array.isArray(character?.variantPresets) ? character.variantPresets.map(preset => ({
+                    id:preset.id, name:preset.name,
+                    selections:(preset.selections || []).map(selection => ({ layerId:String(selection.layerId), tag:selection.tag }))
+                })) : [],
+                breathPresets: Array.isArray(character?.breathPresets) ? character.breathPresets.map(preset => ({
+                    id:preset.id, name:preset.name, settings:JSON.parse(JSON.stringify(preset.settings || {}))
+                })) : [],
                 zoom: APP.zoom,
                 // 逐段配音是浏览器内 ObjectURL，无法持久化，保存时只保留文本
                 segments: APP.segments.map(s => ({ text: (s && s.text) || '', subtitle: (s && s.subtitle) || '', subtitleTypewriter: !!s?.subtitleTypewriter, subtitleBreaks: Array.isArray(s?.subtitleBreaks) ? s.subtitleBreaks.map(point => ({ ...point })) : [], subtitleSound: s?.subtitleSound ? { ...s.subtitleSound } : null, audio: null, language: (s && s.language) || 'auto', characterId: (s && s.characterId) || APP.activeCharacterId })),
@@ -6014,7 +6236,7 @@
             };
             const mouth = { phoneme:'m', activeVariant:'normal', activeEyeVariant:'normal' };
             const globalMask = { tex:null, enabled:false, offsetX:0, offsetY:0, scaleX:1, scaleY:1 };
-            const defaultCharacter = { id:'character_1', name:'角色 1', layers, framePos, blink, breath, mouth, globalMask };
+            const defaultCharacter = { id:'character_1', name:'角色 1', layers, framePos, blink, breath, mouth, globalMask, variantPresets:[], breathPresets:[] };
             Object.assign(APP, {
                 zoom:1, panX:0, panY:0, framePos, blink, breath, mouth, layers,
                 globalMask, globalNoiseTex:null, segments:[], language:'auto', globalAudio:null,
@@ -6145,6 +6367,11 @@
         async function restoreActiveCharacterState(saved, options = {}) {
             const restoreSegments = options.restoreSegments !== false;
             const restoreProjectSettings = options.restoreProjectSettings !== false;
+            const character = getActiveCharacter();
+            if (character) {
+                character.variantPresets = Array.isArray(saved.variantPresets) ? saved.variantPresets : [];
+                character.breathPresets = Array.isArray(saved.breathPresets) ? saved.breathPresets : [];
+            }
             const newLayers = [];
             for (const ld of saved.layers) {
                 const layer = {
@@ -6344,6 +6571,7 @@
                 await restoreActiveCharacterState(saved);
                 syncActiveCharacter();
                 refreshCharacterSelector();
+                renderBreathPresetControls();
                 return;
             }
             const loaded = [];
@@ -7595,8 +7823,32 @@
             setupFxPreviewControlReadouts();
             setupAnimationPreviewControls();
             document.getElementById('new-project-btn').addEventListener('click', createNewProject);
+            document.getElementById('variant-preset-add').addEventListener('click', addVariantPreset);
+            document.getElementById('variant-preset-overwrite').addEventListener('click', overwriteVariantPreset);
+            document.getElementById('variant-preset-delete').addEventListener('click', deleteVariantPreset);
+            document.getElementById('variant-preset-select').addEventListener('change', () => {
+                renderVariantPresetControls();
+                applyVariantPreset();
+            });
+            document.getElementById('variant-preset-name').addEventListener('keydown', event => {
+                if (event.key === 'Enter') { event.preventDefault(); addVariantPreset(); }
+            });
+            document.getElementById('breath-preset-add').addEventListener('click', addBreathPreset);
+            document.getElementById('breath-preset-overwrite').addEventListener('click', overwriteBreathPreset);
+            document.getElementById('breath-preset-delete').addEventListener('click', deleteBreathPreset);
+            document.getElementById('breath-preset-select').addEventListener('change', () => {
+                renderBreathPresetControls();
+                applyBreathPreset();
+            });
+            document.getElementById('breath-preset-name').addEventListener('keydown', event => {
+                if (event.key === 'Enter') { event.preventDefault(); addBreathPreset(); }
+            });
+            document.getElementById('insert-all-breath-tags').addEventListener('click', () => {
+                insertTagAtCursor(getAllBreathControlTags().join('\n'));
+            });
             setUiLanguage('zh');
             renderBreathParts();
+            renderBreathPresetControls();
             document.getElementById('dock-timing-draft')?.addEventListener('click', generatePauseRateDraft);
             document.getElementById('dock-auto-lip')?.addEventListener('click', generateAutoLipDraft);
             // 将所有右侧工具迁入页面底部，给控制语句、配音与字幕足够的可视空间。
@@ -7620,7 +7872,7 @@
                 const index = APP.characters.length + 1;
                 const id = `character_${Date.now()}`;
                 APP.characters.push({
-                    id, name: `角色 ${index}`, layers: [], framePos: {},
+                    id, name: `角色 ${index}`, layers: [], framePos: {}, variantPresets:[], breathPresets:[],
                     blink: { enabled: true, frame: 'open', timer: 0, speed: 60, minInterval: 2000, maxInterval: 5000, nextBlinkTime: 2000, sequence: null },
                     breath: { enabled: false, period: 3.5, easing: 'sine', reverse:false, parts: [{amp:0.03,phase:0,easing:'sine'},{amp:0.03,phase:0.35,easing:'sine'},{amp:0.03,phase:0.7,easing:'sine'},{amp:0.03,phase:1.05,easing:'sine'},{amp:0.03,phase:1.4,easing:'sine'}] },
                     mouth: { phoneme: 'm', activeVariant: 'normal', activeEyeVariant: 'normal' },
@@ -7665,7 +7917,9 @@
                     blink: { ...source.blink, sequence: null },
                     breath: { ...source.breath, parts: (source.breath.parts || []).map(part => ({ ...part })) },
                     mouth: { ...source.mouth },
-                    globalMask: { ...source.globalMask }
+                    globalMask: { ...source.globalMask },
+                    variantPresets: (source.variantPresets || []).map(preset => ({ ...preset, selections:(preset.selections || []).map(selection => ({ ...selection })) })),
+                    breathPresets: (source.breathPresets || []).map(preset => ({ ...preset, settings:JSON.parse(JSON.stringify(preset.settings || {})) }))
                 };
                 APP.characters.push(duplicate);
                 activateCharacter(id);
